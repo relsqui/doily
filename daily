@@ -32,6 +32,11 @@ else
 #   * dailies visible to all members of a group
 #   * dailies visible to all users on the system
 
+# Whatever option you choose will be applied to everything in your dailies
+# directory (including any extra files you choose to add). If you change
+# your privacy options later, the new permissions will be applied retroactively
+# to any previous dailies.
+
 # To allow everyone to read your dailies, set this to anything non-empty.
 public_dailies=
 
@@ -39,18 +44,15 @@ public_dailies=
 # (If public_dailies is set, this value is ignored.)
 daily_group=
 
-# If you change your privacy options after writing some dailies, the new
-# permissions will be applied retroactively to any previous dailies. For the
-# same reason, if you put any extra files in your dailies directory, the same
-# permissions will be applied to them.
-
 
 # GIT OPTIONS
 
-# If you have no idea what this is about, it's safe to ignore it or turn
-# it off.
+# git saves old versions of files so you can recover them if you accidentally
+# delete or change something you didn't mean to. If you're not familiar with
+# it, it's safe to turn these options off or ignore them.
 
-# To keep your dailies in git, set this to anything non-empty.
+# To keep your dailies in git, set this to anything non-empty. If you add any
+# extra files to your dailies directory, they'll be included in the repo.
 use_git=y
 
 # If you don't care about the content of your commit messages, set this to
@@ -59,31 +61,29 @@ use_git=y
 auto_commit=y
 
 # If you turn *off* use_git after writing some dailies, the existing repository
-# won't be deleted. You can do that with `rm -r ~/dailies/.git` if you want. (If
-# you changed where your dailies live, use that directory instead of ~/dailies.)
-
-# If you turn *on* use_git after writing some dailies, old dailies will be
-# added to the newly-created repository. For the same reason, if you put any
-# extra files in your dailies directory, they'll be included in the repo.
+# won't be deleted. (You can do so by deleting the directory called .git inside
+# your dailies directory.) If you turn *on* use_git after writing some dailies,
+# old dailies will be added to the newly-created repository.
 
 
 # TEXT EDITOR PREFERENCE
 
 # daily reads the EDITOR environment variable to determine what text editor to
 # use. A good place to set that variable is by exporting it from your .bashrc
-# file by adding a line like:
-#   export EDITOR=vim
+# file by adding a line like this one:
+#   export EDITOR=vim # (or whatever you like better)
 # If you want to set a different preference just for daily, you can do that here.
-# (If you do neither, daily will use nano.)
+# If you do neither, daily will use nano.
 #EDITOR=
 
 
 # LOCATION OPTION
 
-# Where should your daily files be stored?
 # daily will assume that it's safe to change permissions on everything in this
 # directory. Don't set it to a directory you use for something else, especially
 # not your home directory, and don't set it to empty.
+
+# Where should your daily files be stored?
 daily_dir=~/dailies
 
 # If you change the location after writing some dailies, the old dailies will
@@ -92,13 +92,14 @@ daily_dir=~/dailies
 # repository if necessary, but future changes will not propagate back to the
 # old location.
 EOF
-    echo <<EOF
+    cat <<EOF
 No config file found. A file called .dailyrc has been created in your home
 directory. You can take a look at it if you want to change the default
 settings (or just find out what they are).
 
 When you're ready, run daily again to write your first daily!
 EOF
+    exit 0
 fi
 
 if [[ -n "$public_dailies" ]]; then
