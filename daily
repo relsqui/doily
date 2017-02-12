@@ -1,0 +1,152 @@
+#!/bin/bash
+
+# Facilitate writing into a daily journal file.
+
+# This script keeps track of permissions, location, optional version control,
+# etc. and drops you into an editor. You're on your own for the actual writing.
+
+set -e
+
+if [[ -e ~/.dailyrc ]]; then
+    source ~/.dailyrc
+else
+    cat >~/.dailyrc <<EOF
+# SUMMARY OF DEFAULTS
+
+# If you change nothing in this file, here's what will be true:
+
+#   * You'll write dailies with the editor defined in your \$EDITOR
+#     (or nano if you don't have an editor preference set).
+#   * Your dailies will be stored in ~/dailies.
+#   * Only you will be able to read them.
+#   * They'll be automatically committed to git with a generic message.
+
+# If all that sounds good, you can stop here!
+
+
+# PRIVACY OPTIONS
+
+# You have three privacy choices:
+
+#   * dailies only readable by you (default)
+#   * dailies visible to all members of a group
+#   * dailies visible to all users on the system
+
+# To allow everyone to read your dailies, set this to anything non-empty.
+public_dailies=
+
+# To allow a group to read your dailies, put the group name here.
+# (If public_dailies is set, this value is ignored.)
+daily_group=
+
+# If you change your privacy options after writing some dailies, the new
+# permissions will be applied retroactively to any previous dailies. For the
+# same reason, if you put any extra files in your dailies directory, the same
+# permissions will be applied to them.
+
+
+# GIT OPTIONS
+
+# If you have no idea what this is about, it's safe to ignore it or turn
+# it off.
+
+# To keep your dailies in git, set this to anything non-empty.
+use_git=y
+
+# If you don't care about the content of your commit messages, set this to
+# anything non-empty to have automatic messages inserted for you.
+# (This only does anything if use_git is turned on.)
+auto_commit=y
+
+# If you turn *off* use_git after writing some dailies, the existing repository
+# won't be deleted. You can do that with `rm -r ~/dailies/.git` if you want. (If
+# you changed where your dailies live, use that directory instead of ~/dailies.)
+
+# If you turn *on* use_git after writing some dailies, old dailies will be
+# added to the newly-created repository. For the same reason, if you put any
+# extra files in your dailies directory, they'll be included in the repo.
+
+
+# TEXT EDITOR PREFERENCE
+
+# daily reads the EDITOR environment variable to determine what text editor to
+# use. A good place to set that variable is by exporting it from your .bashrc
+# file by adding a line like:
+#   export EDITOR=vim
+# If you want to set a different preference just for daily, you can do that here.
+# (If you do neither, daily will use nano.)
+#EDITOR=
+
+
+# LOCATION OPTION
+
+# Where should your daily files be stored?
+# daily will assume that it's safe to change permissions on everything in this
+# directory. Don't set it to a directory you use for something else, especially
+# not your home directory, and don't set it to empty.
+daily_dir=~/dailies
+
+# If you change the location after writing some dailies, the old dailies will
+# stay in the old location. All your configuration will be applied to the new
+# location (after the next time you run daily), including creating a new git
+# repository if necessary, but future changes will not propagate back to the
+# old location.
+EOF
+    echo <<EOF
+No config file found. A file called .dailyrc has been created in your home
+directory. You can take a look at it if you want to change the default
+settings (or just find out what they are).
+
+When you're ready, run daily again to write your first daily!
+EOF
+fi
+
+if [[ -n "$public_dailies" ]]; then
+    daily_perms=644
+    dir_perms=755
+    daily_group="$USER"
+elif [[ -n "$daily_group" ]]; then
+    daily_perms=640
+    dir_perms=750
+else
+    daily_perms=600
+    dir_perms=700
+    daily_group="$USER"
+fi
+
+if [[ ! -d "${daily_dir}" ]]; then
+    mkdir "${daily_dir}"
+fi
+
+# Do this every time, in case the config has changed.
+chmod "$dir_perms" "${daily_dir}"
+chgrp "$daily_group" "${daily_dir}"
+
+old_dir="${PWD}"
+cd "${daily_dir}"
+
+# Do this every time, in case the config has changed.
+if [[ -n "$use_git" ]]; then
+    git init
+fi
+today="$(date +%F)"
+touch "$today"
+# Set permissions on everything, in case the config has changed.
+# (If you were wondering why the config file says not to use your home
+# directory as your dailies directory, this is why.)
+chmod "$daily_perms" *
+chgrp "$daily_group" *
+
+# Default to nano if the preferred editor is empty.
+"${EDITOR:-nano}" "$today"
+
+if [ -n "${use_git}" ]; then
+    # Add everything, to catch old dailies if the repository is new.
+    git add .
+    if [ -n "${auto_commit}" ]; then
+        git commit -m "Automatic daily commit for ${today}."
+    else
+        git commit
+    fi
+fi
+cd "$old_dir"
