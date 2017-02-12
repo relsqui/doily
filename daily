@@ -80,8 +80,9 @@ auto_commit=y
 # LOCATION OPTION
 
 # daily will assume that it's safe to change permissions on everything in this
-# directory. Don't set it to a directory you use for something else, especially
-# not your home directory, and don't set it to empty.
+# directory. If you need to change it, make sure it's an absolute path (one that
+# starts with / or ~). Don't set it to a directory you use for something else,
+# especially not your home directory, and don't set it to empty.
 
 # Where should your daily files be stored?
 daily_dir=~/dailies
@@ -115,7 +116,19 @@ else
     daily_group="$USER"
 fi
 
-if [[ ! -d "${daily_dir}" ]]; then
+if [[ -z "${daily_dir}" ]]; then
+    echo "No storage location set for your dailies!"\
+         "Please set one by editing ~/.dailyrc." 1>&2
+    exit 1
+elif [[ "${daily_dir}" != /* ]]; then
+    echo "Your dailies location is set to a relative path, which is"\
+         "unsafe. Please change it by editing ~/.dailyrc." 1>&2
+    exit 1
+elif [[ "${daily_dir}" -ef "${HOME}" ]]; then
+    echo "Your dailies location is set to your home directory, which is"\
+         "unsafe. Please change it by editing ~/.dailyrc." 1>&2
+    exit 1
+elif [[ ! -d "${daily_dir}" ]]; then
     mkdir "${daily_dir}"
 fi
 
