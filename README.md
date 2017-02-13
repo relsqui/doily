@@ -28,10 +28,11 @@ When you're done, save and quit the text editor like normal. If you're using
 git and have elected to write your own commit messages, you'll be prompted to
 write a message for the new commit.
 
-If you run `doily` again on the same day (before midnight, according to the
-clock of the computer you're writing on), you'll be editing the same file for
-that day. If the day rolls over while you're writing, whatever file you're
-currently in will still be saved under the previous day.
+Each day that you run `doily`, a new file will be created. If you run it again
+on the same day (before midnight, according to the clock of the computer
+you're writing on), you'll be editing the same file for that day. If the
+day rolls over while you're writing, whatever file you're currently in will
+still be saved under the previous day.
 
 ## Feedback and Contribution
 
