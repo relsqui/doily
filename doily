@@ -6,19 +6,23 @@
 
 set -e
 
-if [[ -e ~/.doilyrc ]]; then
-    source ~/.doilyrc
+# This complies with the XDG Base Directory Specification:
+# https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
+CONF_FILE="${CONF_DIR}/doily.cfg"
+
+if [[ -e "${CONF_FILE}" ]]; then
+    source "${CONF_FILE}"
 else
     # This bit of magic is determining the directory where the script being
     # executed is located, across symlinks, to get to the example config.
     # Based on: http://unix.stackexchange.com/a/17500
-    cp $(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/default.doilyrc ~/.doilyrc
-    echo "cp $(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/default.doilyrc ~/"
+    mkdir -p "${CONF_DIR}"
+    cp "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/default.cfg" "${CONF_FILE}"
     cat <<EOF
-No config file found. A file called .doilyrc has been created in your home
-directory. You can take a look at it if you want to change the default
-settings (or just find out what they are).
+Configuration file created in: ${CONF_FILE}
 
+You can take a look if you want to view or change the default settings.
 When you're ready, run \`doily\` again to write your first daily!
 EOF
     exit 0
@@ -39,19 +43,19 @@ fi
 
 if [[ -z "${doily_dir}" ]]; then
     echo "No storage location set for Doily!"\
-         "Please set one by editing ~/.doilyrc" 1>&2
+         "Please set one by editing ${CONF_FILE}" 1>&2
     exit 1
 elif [[ "${doily_dir}" != /* ]]; then
     # If it starts with ~, the shell will expand it before it gets here.
     echo "Your Doily directory is set to a relative path, which is"\
-         "unsafe. Please change it by editing ~/.doilyrc" 1>&2
+         "unsafe. Please change it by editing ${CONF_FILE}" 1>&2
     exit 1
 elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
     echo "Your Doily directory is set to your home directory, which is"\
-         "unsafe. Please change it by editing ~/.doilyrc" 1>&2
+         "unsafe. Please change it by editing ${CONF_FILE}" 1>&2
     exit 1
 elif [[ ! -d "${doily_dir}" ]]; then
-    mkdir "${doily_dir}"
+    mkdir -p "${doily_dir}"
 fi
 
 old_dir="${PWD}"

@@ -18,7 +18,7 @@ messages.
 
 If you want to check out those settings and an explanation of them before
 downloading or running Doily, you can read
-[the default configuration](default.doilyrc).
+[the default configuration](default.cfg).
 
 ## Usage
 
