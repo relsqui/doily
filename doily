@@ -151,7 +151,7 @@ if [[ -n "${use_git}" ]]; then
     # on, though, it ensures the repo gets created and old dailies are included.
     git init
     git add .
-    if [ -n "${auto_commit}" ]; then
+    if [[ -n "${auto_commit}" ]]; then
         git commit -m "Automatic commit from Doily."
     else
         git commit
