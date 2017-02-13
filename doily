@@ -143,8 +143,8 @@ cd "${doily_dir}"
 # directory as your Doily directory, this is why.)
 chmod "$dir_perms" .
 chgrp "$doily_group" .
-chmod "$file_perms" *
-chgrp "$doily_group" *
+chmod "$file_perms" ./*
+chgrp "$doily_group" ./*
 
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
