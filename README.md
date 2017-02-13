@@ -48,3 +48,7 @@ currently in will still be saved as the previous day.
   If you're not addressing an existing issue, please open one (or email) first
   to get feedback on your idea.
 * When in doubt? Feel free to [email me](mailto:relsqui@chiliahedron.com)!
+
+## Why "Doily"?
+
+Because "daily" is ungoogleable.
