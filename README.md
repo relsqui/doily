@@ -11,19 +11,18 @@ terms of the MIT license. A copy is included in LICENSE.txt.
 
 ## Setup
 
-The first time you run `doily`, it will create a configuration file in your home
-directory called `.doilyrc`.  You can edit it to change your settings, such as
-who can view your dailies and whether you want to customize your commit
-messages.
+The first time you run `doily`, it will create a configuration file and tell
+you where.  You can edit that file to change your settings, such as who can
+view your dailies and whether you want to customize your commit messages.
 
-If you want to check out those settings and an explanation of them before
-downloading or running Doily, you can read
+If you want to read all the settings and an explanation of them before
+downloading or running Doily, you can look at
 [the default configuration](default.cfg).
 
 ## Usage
 
-After creating your configuration (see above), simply run `doily` again. It
-will drop you into a text editor where you can write whatever you want.
+After creating your configuration, simply run `doily` again. It will drop
+you into a text editor where you can write whatever you want.
 
 When you're done, save and quit the text editor like normal. If you're using
 git and have elected to write your own commit messages, you'll be prompted to
@@ -32,7 +31,7 @@ write a message for the new commit.
 If you run `doily` again on the same day (before midnight, according to the
 clock of the computer you're writing on), you'll be editing the same file for
 that day. If the day rolls over while you're writing, whatever file you're
-currently in will still be saved as the previous day.
+currently in will still be saved under the previous day.
 
 ## Feedback and Contribution
 
