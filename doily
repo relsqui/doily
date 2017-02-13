@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Doily (c) 2017 Finn Ellis. MIT License.
+# Doily (c) 2017 Finn Ellis, licensed under MIT.
 # Manage writing into daily files.
 # https://github.com/relsqui/doily
 
@@ -11,13 +11,14 @@ set -e
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.cfg"
 
+
 if [[ -e "${CONF_FILE}" ]]; then
     source "${CONF_FILE}"
 else
+    mkdir -p "${CONF_DIR}"
     # This bit of magic is determining the directory where the script being
     # executed is located, across symlinks, to get to the example config.
     # Based on: http://unix.stackexchange.com/a/17500
-    mkdir -p "${CONF_DIR}"
     cp "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/default.cfg" "${CONF_FILE}"
     cat <<EOF
 Configuration file created in: ${CONF_FILE}
@@ -27,6 +28,7 @@ When you're ready, run \`doily\` again to write your first daily!
 EOF
     exit 0
 fi
+
 
 if [[ -n "$public_dailies" ]]; then
     file_perms=644
