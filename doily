@@ -120,6 +120,7 @@ if [[ -z "${doily_dir}" ]]; then
          "Please set one by editing ~/.doilyrc" 1>&2
     exit 1
 elif [[ "${doily_dir}" != /* ]]; then
+    # If it starts with ~, the shell will expand it before it gets here.
     echo "Your Doily directory is set to a relative path, which is"\
          "unsafe. Please change it by editing ~/.doilyrc" 1>&2
     exit 1
@@ -131,31 +132,27 @@ elif [[ ! -d "${doily_dir}" ]]; then
     mkdir "${doily_dir}"
 fi
 
-# Set permissions every time, in case the config has changed.
-chmod "$dir_perms" "${doily_dir}"
-chgrp "$doily_group" "${doily_dir}"
-
 old_dir="${PWD}"
 cd "${doily_dir}"
 
-today="$(date +%F)"
-touch "$today"
+# Default to nano if the preferred editor is empty.
+"${EDITOR:-nano}" "$(date +%F)"
+
 # Set permissions on everything, in case the config has changed.
 # (If you were wondering why the config file says not to use your home
 # directory as your Doily directory, this is why.)
+chmod "$dir_perms" .
+chgrp "$doily_group" .
 chmod "$file_perms" *
 chgrp "$doily_group" *
 
-# Default to nano if the preferred editor is empty.
-"${EDITOR:-nano}" "$today"
-
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
-    # on, it ensures the repo gets created and old dailies are included.
+    # on, though, it ensures the repo gets created and old dailies are included.
     git init
     git add .
     if [ -n "${auto_commit}" ]; then
-        git commit -m "Automatic commit for ${today}."
+        git commit -m "Automatic commit from Doily."
     else
         git commit
     fi
