@@ -1,6 +1,7 @@
 ### Doily
-https://github.com/relsqui/doily
 (c) 2017 Finn Ellis
+
+https://github.com/relsqui/doily
 
 Doily quietly manages the logistics of doing a little writing every day,
 whether you're journaling, noveling, or thesising. It stores files organized by
@@ -26,16 +27,17 @@ or running Doily, it's all in a heredoc in the script itself. :)
 
 ## Usage
 
-After creating your configuration (see above), simply run `doily`. It will drop
-you into a text editor where you can write whatever you want.
+After creating your configuration (see above), simply run `doily` again. It
+will drop you into a text editor where you can write whatever you want.
 
-After you're done, if you're using git and have elected to write your own
-commit messages, you'll be prompted to write a message for the new commit.
+When you're done, save and quit the text editor like normal. If you're using
+git and have elected to write your own commit messages, you'll be prompted to
+write a message for the new commit.
 
-If you run `doily` a second time on the same day (before midnight, according
-to the clock of the computer you're writing on), you'll be editing the same
-file for that day. The filename is set when you start writing, not finish, so
-it won't be interrupted or duplicated if you're writing when the day rolls over.
+If you run `doily` again on the same day (before midnight, according to the
+clock of the computer you're writing on), you'll be editing the same file for
+that day. If the day rolls over while you're writing, whatever file you're
+currently in will still be saved as the previous day.
 
 ## Feedback and Contribution
 
@@ -43,6 +45,6 @@ it won't be interrupted or duplicated if you're writing when the day rolls over.
   [issue tracker](https://github.com/relsqui/doily/issues).
 * Want to contribute? Make a
   [pull request](https://www.thinkful.com/learn/github-pull-request-tutorial/).
-  (If you're not addressing an existing issue, consider opening one first to
-  get feedback.)
+  If you're not addressing an existing issue, please open one (or email) first
+  to get feedback on your idea.
 * When in doubt? Feel free to [email me](mailto:relsqui@chiliahedron.com)!
