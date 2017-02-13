@@ -9,7 +9,47 @@ writings in git for you.
 You're free to copy, modify, and distribute Doily, with attribution, under the
 terms of the MIT license. A copy is included in LICENSE.txt.
 
-## Setup
+
+## Installation
+
+Doily's only absolute prerequisite is `bash`, and other utilities that come
+standard on normal linux systems (like `date`). Some optional features have
+other requirements (like `git`).
+
+First, grab the code from this repository.
+
+```bash
+git clone git@github.com:relsqui/doily.git
+```
+
+The simplest way to proceed from here is just to cd into the repository and
+run the script directly.
+
+```bash
+cd doily
+./doily
+```
+
+If you want to be able to just run `doily` from wherever, you need to link it
+into somewhere that's on your `$PATH`. For example, you can create a `~/bin`
+directory for yourself and put it there.
+
+```bash
+mkdir ~/bin
+ln -s ./doily ~/bin/doily
+```
+
+Then add this line to your `.bashrc` if it's not already there:
+
+```
+export PATH="$PATH:~/bin"
+```
+
+After you log out and log back in (or just `source .bashrc`), you should be
+able to type `doily` from any directory to run Doily.
+
+
+## Configuration
 
 The first time you run `doily`, it will create a configuration file and tell
 you where.  You can edit that file to change your settings, such as who can
@@ -18,6 +58,7 @@ view your dailies and whether you want to customize your commit messages.
 If you want to read all the settings and an explanation of them before
 downloading or running Doily, you can look at
 [the default configuration](default.cfg).
+
 
 ## Usage
 
