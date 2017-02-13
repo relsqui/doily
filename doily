@@ -131,17 +131,13 @@ elif [[ ! -d "${doily_dir}" ]]; then
     mkdir "${doily_dir}"
 fi
 
-# Do this every time, in case the config has changed.
+# Set permissions every time, in case the config has changed.
 chmod "$dir_perms" "${doily_dir}"
 chgrp "$doily_group" "${doily_dir}"
 
 old_dir="${PWD}"
 cd "${doily_dir}"
 
-# Do this every time, in case the config has changed.
-if [[ -n "$use_git" ]]; then
-    git init
-fi
 today="$(date +%F)"
 touch "$today"
 # Set permissions on everything, in case the config has changed.
@@ -153,8 +149,10 @@ chgrp "$doily_group" *
 # Default to nano if the preferred editor is empty.
 "${EDITOR:-nano}" "$today"
 
-if [ -n "${use_git}" ]; then
-    # Add everything, to catch old dailies if the repository is new.
+if [[ -n "${use_git}" ]]; then
+    # This will usually be excessive but harmless; if use_git is newly turned
+    # on, it ensures the repo gets created and old dailies are included.
+    git init
     git add .
     if [ -n "${auto_commit}" ]; then
         git commit -m "Automatic commit for ${today}."
@@ -162,4 +160,5 @@ if [ -n "${use_git}" ]; then
         git commit
     fi
 fi
+
 cd "$old_dir"
