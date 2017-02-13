@@ -91,6 +91,7 @@ doily_dir=~/.doily_files
 # repository if necessary, but future changes will not propagate back to the
 # old location.
 EOF
+    chmod 600 ~/.doilyrc
     cat <<EOF
 No config file found. A file called .doilyrc has been created in your home
 directory. You can take a look at it if you want to change the default
@@ -105,7 +106,7 @@ if [[ -n "$public_dailies" ]]; then
     file_perms=644
     dir_perms=755
     doily_group="$USER"
-elif [[ -n "$daily_group" ]]; then
+elif [[ -n "$doily_group" ]]; then
     file_perms=640
     dir_perms=750
 else
