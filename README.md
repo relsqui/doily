@@ -1,4 +1,4 @@
-### Doily
+# Doily
 (c) 2017 Finn Ellis
 
 https://github.com/relsqui/doily
