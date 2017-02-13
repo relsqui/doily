@@ -1,16 +1,10 @@
-# Doily
+# [Doily](https://github.com/relsqui/doily)
 (c) 2017 Finn Ellis
-
-https://github.com/relsqui/doily
 
 Doily quietly manages the logistics of doing a little writing every day,
 whether you're journaling, noveling, or thesising. It stores files organized by
 date, maintains permission settings that you choose, and can keep your daily
 writings in git for you.
-
-For the actual writing part, you're on your own.
-
-## License
 
 You're free to copy, modify, and distribute Doily, with attribution, under the
 terms of the MIT license. A copy is included in LICENSE.txt.
