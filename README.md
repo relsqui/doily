@@ -23,7 +23,8 @@ who can view your dailies and whether you want to customize your commit
 messages.
 
 If you want to check out those settings and the explanation before downloading
-or running Doily, it's all in a heredoc in the script itself. :)
+or running Doily, it's all in a heredoc in the script itself (but
+[shouldn't be](https://github.com/relsqui/doily/issues/3)).
 
 ## Usage
 
