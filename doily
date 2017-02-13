@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Doily (c) 2017 Finn Ellis. MIT License.
-# Facilitate writing into a daily journal file.
+# Manage writing into daily files.
 # https://github.com/relsqui/doily
 
 set -e
@@ -58,36 +58,31 @@ elif [[ ! -d "${doily_dir}" ]]; then
     mkdir -p "${doily_dir}"
 fi
 
-old_dir="${PWD}"
-cd "${doily_dir}"
-
 # Default to nano if the preferred editor is empty.
-"${EDITOR:-nano}" "$(date +%F)"
+"${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
 
 # Set permissions on everything, in case the config has changed.
 # (If you were wondering why the config file says not to use your home
 # directory as your Doily directory, this is why.)
-chmod "$dir_perms" .
-chgrp "$doily_group" .
+chmod "$dir_perms" "${doily_dir}"
+chgrp "$doily_group" "${doily_dir}"
 
 if ! find "${doily_dir}" -maxdepth 0 -empty; then
     # These will error out if the directory is empty (for example if the text
     # editor was closed without saving), so we check first.
     # The method is taken from: http://stackoverflow.com/a/91769
-    chmod "$file_perms" ./*
-    chgrp "$doily_group" ./*
+    chmod "$file_perms" "${doily_dir}/*"
+    chgrp "$doily_group" "${doily_dir}./*"
 fi
 
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
     # on, though, it ensures the repo gets created and old dailies are included.
-    git init
-    git add .
+    git -C "${doily_dir}" init
+    git -C "${doily_dir}" add .
     if [[ -n "${auto_commit}" ]]; then
-        git commit -m "Automatic commit from Doily."
+        git -C "${doily_dir}" commit -m "Automatic commit from Doily."
     else
-        git commit
+        git -C "${doily_dir}" commit
     fi
 fi
-
-cd "$old_dir"
