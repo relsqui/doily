@@ -65,8 +65,13 @@ cd "${doily_dir}"
 # directory as your Doily directory, this is why.)
 chmod "$dir_perms" .
 chgrp "$doily_group" .
-chmod "$file_perms" ./*
-chgrp "$doily_group" ./*
+
+if [[ -n "$(ls -A "${doily_dir}" | grep -v .git)" ]]; then
+    # These will error out if the directory is empty (for example if the text
+    # editor was closed without saving), so we check first.
+    chmod "$file_perms" ./*
+    chgrp "$doily_group" ./*
+fi
 
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
