@@ -1,16 +1,14 @@
 #!/bin/bash
 
 # Facilitate writing into a daily journal file.
-
-# This script keeps track of permissions, location, optional version control,
-# etc. and drops you into an editor. You're on your own for the actual writing.
+# https://github.com/relsqui/doily
 
 set -e
 
-if [[ -e ~/.dailyrc ]]; then
-    source ~/.dailyrc
+if [[ -e ~/.doilyrc ]]; then
+    source ~/.doilyrc
 else
-    cat >~/.dailyrc <<EOF
+    cat >~/.doilyrc <<EOF
 # SUMMARY OF DEFAULTS
 
 # If you change nothing in this file, here's what will be true:
@@ -42,7 +40,7 @@ public_dailies=
 
 # To allow a group to read your dailies, put the group name here.
 # (If public_dailies is set, this value is ignored.)
-daily_group=
+doily_group=
 
 
 # GIT OPTIONS
@@ -52,7 +50,7 @@ daily_group=
 # it, it's safe to turn these options off or ignore them.
 
 # To keep your dailies in git, set this to anything non-empty. If you add any
-# extra files to your dailies directory, they'll be included in the repo.
+# extra files to your Doily directory, they'll be included in the repo.
 use_git=y
 
 # If you don't care about the content of your commit messages, set this to
@@ -62,82 +60,82 @@ auto_commit=y
 
 # If you turn *off* use_git after writing some dailies, the existing repository
 # won't be deleted. (You can do so by deleting the directory called .git inside
-# your dailies directory.) If you turn *on* use_git after writing some dailies,
+# your Doily directory.) If you turn *on* use_git after writing some dailies,
 # old dailies will be added to the newly-created repository.
 
 
 # TEXT EDITOR PREFERENCE
 
-# daily reads the EDITOR environment variable to determine what text editor to
+# Doily reads the EDITOR environment variable to determine what text editor to
 # use. A good place to set that variable is by exporting it from your .bashrc
 # file by adding a line like this one:
 #   export EDITOR=vim # (or whatever you like better)
-# If you want to set a different preference just for daily, you can do that here.
-# If you do neither, daily will use nano.
+# If you want to set a different preference just for Doily, you can do that here.
+# If you do neither, Doily will use nano.
 #EDITOR=
 
 
 # LOCATION OPTION
 
-# daily will assume that it's safe to change permissions on everything in this
+# Doily will assume that it's safe to change permissions on everything in this
 # directory. If you need to change it, make sure it's an absolute path (one that
 # starts with / or ~). Don't set it to a directory you use for something else,
 # especially not your home directory, and don't set it to empty.
 
-# Where should your daily files be stored?
-daily_dir=~/dailies
+# Where should your Doily files be stored?
+doily_dir=~/.doily_files
 
 # If you change the location after writing some dailies, the old dailies will
 # stay in the old location. All your configuration will be applied to the new
-# location (after the next time you run daily), including creating a new git
+# location (after the next time you run Doily), including creating a new git
 # repository if necessary, but future changes will not propagate back to the
 # old location.
 EOF
     cat <<EOF
-No config file found. A file called .dailyrc has been created in your home
+No config file found. A file called .doilyrc has been created in your home
 directory. You can take a look at it if you want to change the default
 settings (or just find out what they are).
 
-When you're ready, run daily again to write your first daily!
+When you're ready, run \`doily\` again to write your first daily!
 EOF
     exit 0
 fi
 
 if [[ -n "$public_dailies" ]]; then
-    daily_perms=644
+    file_perms=644
     dir_perms=755
-    daily_group="$USER"
+    doily_group="$USER"
 elif [[ -n "$daily_group" ]]; then
-    daily_perms=640
+    file_perms=640
     dir_perms=750
 else
-    daily_perms=600
+    file_perms=600
     dir_perms=700
-    daily_group="$USER"
+    doily_group="$USER"
 fi
 
-if [[ -z "${daily_dir}" ]]; then
-    echo "No storage location set for your dailies!"\
-         "Please set one by editing ~/.dailyrc." 1>&2
+if [[ -z "${doily_dir}" ]]; then
+    echo "No storage location set for Doily!"\
+         "Please set one by editing ~/.doilyrc" 1>&2
     exit 1
-elif [[ "${daily_dir}" != /* ]]; then
-    echo "Your dailies location is set to a relative path, which is"\
-         "unsafe. Please change it by editing ~/.dailyrc." 1>&2
+elif [[ "${doily_dir}" != /* ]]; then
+    echo "Your Doily directory is set to a relative path, which is"\
+         "unsafe. Please change it by editing ~/.doilyrc" 1>&2
     exit 1
-elif [[ "${daily_dir}" -ef "${HOME}" ]]; then
-    echo "Your dailies location is set to your home directory, which is"\
-         "unsafe. Please change it by editing ~/.dailyrc." 1>&2
+elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
+    echo "Your Doily directory is set to your home directory, which is"\
+         "unsafe. Please change it by editing ~/.doilyrc" 1>&2
     exit 1
-elif [[ ! -d "${daily_dir}" ]]; then
-    mkdir "${daily_dir}"
+elif [[ ! -d "${doily_dir}" ]]; then
+    mkdir "${doily_dir}"
 fi
 
 # Do this every time, in case the config has changed.
-chmod "$dir_perms" "${daily_dir}"
-chgrp "$daily_group" "${daily_dir}"
+chmod "$dir_perms" "${doily_dir}"
+chgrp "$doily_group" "${doily_dir}"
 
 old_dir="${PWD}"
-cd "${daily_dir}"
+cd "${doily_dir}"
 
 # Do this every time, in case the config has changed.
 if [[ -n "$use_git" ]]; then
@@ -147,9 +145,9 @@ today="$(date +%F)"
 touch "$today"
 # Set permissions on everything, in case the config has changed.
 # (If you were wondering why the config file says not to use your home
-# directory as your dailies directory, this is why.)
-chmod "$daily_perms" *
-chgrp "$daily_group" *
+# directory as your Doily directory, this is why.)
+chmod "$file_perms" *
+chgrp "$doily_group" *
 
 # Default to nano if the preferred editor is empty.
 "${EDITOR:-nano}" "$today"
@@ -158,7 +156,7 @@ if [ -n "${use_git}" ]; then
     # Add everything, to catch old dailies if the repository is new.
     git add .
     if [ -n "${auto_commit}" ]; then
-        git commit -m "Automatic daily commit for ${today}."
+        git commit -m "Automatic commit for ${today}."
     else
         git commit
     fi
