@@ -12,9 +12,9 @@ terms of the MIT license. A copy is included in LICENSE.txt.
 
 ## Installation
 
-Doily's only absolute prerequisite is `bash`, and other utilities that come
-standard on normal linux systems (like `date`). Some optional features have
-other requirements (like `git`).
+Doily's only absolute prerequisites are `bash` and other utilities that come
+standard on normal linux systems (like `date`). Optional features may have
+other requirements (notably `git`).
 
 First, grab the code from this repository.
 
@@ -30,8 +30,8 @@ cd doily
 ./doily
 ```
 
-If you want to be able to just run `doily` from wherever, you need to link it
-into somewhere that's on your `$PATH`. For example, you can create a `~/bin`
+If you want to be able to run `doily` from anywhere, you need to link it
+into somewhere that's in your `$PATH`. For example, you can create a `~/bin`
 directory for yourself and put it there.
 
 ```bash
@@ -51,9 +51,9 @@ able to type `doily` from any directory to run Doily.
 
 ## Configuration
 
-The first time you run `doily`, it will create a configuration file and tell
-you where.  You can edit that file to change your settings, such as who can
-view your dailies and whether you want to customize your commit messages.
+The first time you run `doily`, it will create a configuration file and echo
+its path.  You can edit that file to change your settings, such as who can
+view your dailies and whether you want to customize your git commit messages.
 
 If you want to read all the settings and an explanation of them before
 downloading or running Doily, you can look at
@@ -75,15 +75,20 @@ you're writing on), you'll be editing the same file for that day. If the
 day rolls over while you're writing, whatever file you're currently in will
 still be saved under the previous day.
 
+
 ## Feedback and Contribution
 
-* Have a bug report or request? Please add them to the
+Doily is currently in alpha, prior to its
+[first numbered version release](https://github.com/relsqui/doily/milestone/1).
+It's a little early to be adding large amounts of new feature code, but a
+great time for suggestions and comments about architecture and features.
+
+* Have a bug report, idea, or request? Please add them to the
   [issue tracker](https://github.com/relsqui/doily/issues).
-* Want to contribute? Make a
+* Want to contribute? Yay! Please comment on or create an issue first so we can
+  discuss what you want to do before you make a
   [pull request](https://www.thinkful.com/learn/github-pull-request-tutorial/).
-  If you're not addressing an existing issue, please open one (or email) first
-  to get feedback on your idea.
-* When in doubt? Feel free to [email me](mailto:relsqui@chiliahedron.com)!
+* When in doubt, feel free to just [email me](mailto:relsqui@chiliahedron.com).
 
 ## Why "Doily"?
 
