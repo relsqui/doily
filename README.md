@@ -76,12 +76,20 @@ day rolls over while you're writing, whatever file you're currently in will
 still be saved under the previous day.
 
 
-## Feedback and Contribution
+## Status, Feedback, and Contribution
 
 Doily is currently in alpha, prior to its
-[first numbered version release](https://github.com/relsqui/doily/milestone/1).
-It's a little early to be adding large amounts of new feature code, but a
-great time for suggestions and comments about architecture and features.
+[first numbered version release](https://github.com/relsqui/doily/milestone/1),
+which will respect [semantic versioning](http://semver.org). Consequently,
+*the interface may change suddenly* while new features are added and tested.
+I strongly encourage you to play with Doily and report back, but if you're
+writing things that are important to you, please back them up somewhere safe!
+(One way to do this would be to enable `use_git` and periodically `git pull`
+the resulting repository to another directory.)
+
+For the same reason, it's a little early to be adding large amounts of new
+feature code, and a great time for suggestions and comments about architecture
+and features.
 
 * Have a bug report, idea, or request? Please add them to the
   [issue tracker](https://github.com/relsqui/doily/issues).
