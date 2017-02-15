@@ -28,15 +28,18 @@ doily::get_streak() {
         (( count += 1 ))
     done
 
-    if [[ "$streak" -eq 1 ]]; then
-        if [[ "${total}" -gt "$streak" ]]; then
+    echo
+    if [[ "${streak}" -eq 1 ]]; then
+        if [[ "${total}" -gt "${streak}" ]]; then
             # Just came back after a gap.
             echo "Streak: ${dots} Welcome back!"
         else
             # First post!
             echo "Streak: ${dots} Welcome!"
         fi
-    elif [[ "$streak" -gt 1 ]]; then
+    elif [[ "${streak}" -gt 1 ]]; then
         echo "Streak: ${dots} Nice."
+    elif [[ "${count}" -gt 0 ]]; then
+        echo "Streak: ${dots}"
     fi
 }
