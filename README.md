@@ -19,7 +19,7 @@ other requirements (notably `git`).
 First, grab the code from this repository.
 
 ```bash
-git clone git@github.com:relsqui/doily.git
+git clone https://github.com/relsqui/doily.git
 ```
 
 The simplest way to proceed from here is just to cd into the repository and
