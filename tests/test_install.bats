@@ -4,6 +4,7 @@ setup() {
     if [ -z "$CI" ]; then
         skip "don't mess with system files outside of CI"
     fi
+    echo "starting test #${BATS_TEST_NUMBER} (${BATS_TEST_DESCRIPTION})"
 }
 
 @test "system install files exist" {
