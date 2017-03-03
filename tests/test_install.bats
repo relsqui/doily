@@ -51,3 +51,10 @@ setup() {
     bash install.sh --user
     test ! ls "/tmp/doily-*"
 }
+
+teardown() {
+    # run eats the return value, which we don't care about
+    # we just want to make sure all our files get cleaned up
+    run bash install.sh --remove
+    run bash install.sh --user --remove
+}
