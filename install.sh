@@ -83,18 +83,17 @@ else
 fi
 
 if [[ "${ACTION}" == "remove" ]]; then
-    rm -v "${binary_dir}/doily"
+    echo "Removing doily binary."
+    rm v "${binary_dir}/doily"
     if [[ "${TARGET}" == "system" ]]; then
         # Remove the systemwide default, but not user config.
-        rm -vr "${config_dir}"
-        cat <<EOF
-The doily binary and default configuration have been removed. Any user data
-(configuration, plugins, and daily files) in home directories is still there.
-EOF
+        echo "Removing default configuration. Leaving user data and config."
+        rm -r "${config_dir}"
     else
         cat <<EOF
-The doily binary has been removed, but your personal settings and writings
-have been left alone. If you really want to remove those, you can do:
+
+Your personal settings and writings have been left alone.
+If you really want to remove those, you can do:
 
 # Get rid of configuration, plugins, and so on:
 rm -r ${config_dir}
@@ -102,33 +101,41 @@ EOF
         # Get the dailies directory, if possible.
         source "${config_dir}/doily.conf" 2>/dev/null
         if [[ -z "${doily_dir}" ]]; then
-            echo -e "\n(You don't appear to have any dailies in your currently-configured location.)"
+            echo -e "\n(You don't appear to have any dailies in your currently-configured location.)\n"
         else
-            echo -e "# Get rid of your dailies. This can't be reversed!\nrm -r ${doily_dir}"
+            echo -e "# Get rid of your dailies. This can't be reversed!\nrm -r ${doily_dir}\n"
         fi
     fi
 else
+    echo "Setting up temp directory."
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
-    trap 'rm -vr "${tempdir}"' EXIT
+    trap 'rm -r "${tempdir}"; echo "Removing temp directory."' EXIT
+    echo "Fetching doily files and unpacking them."
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
-    curl "${release_url}" | tar -vxzC "${tempdir}"
-    mkdir -vp "${binary_dir}" "${config_dir}"
+    curl -s "${release_url}" | tar -xzC "${tempdir}"
+    echo "Creating directories."
+    mkdir -p "${binary_dir}" "${config_dir}"
     # Clobbering old binary with updated binary is OK.
-    mv -v "${tempdir}/doily" "${binary_dir}"
+    echo "Moving binary into place."
+    mv "${tempdir}/doily" "${binary_dir}"
     if [[ "${TARGET}" == "user" ]]; then
         # Don't clobber existing user configuration with the default.
-        mv -vn "${tempdir}/default.conf" "${config_dir}/doily.conf"
+        echo "Creating a config file if it didn't already exist."
+        mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
         if [[ ":$PATH:" != *":$HOME/BIN:"* ]]; then
             cat <<EOF
+
 Installed doily as $HOME/bin/doily. It looks like that directory
 isn't in your \$PATH. If you want to be able to run doily without typing the
 full path, you'll need to do something like:
 
 echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
+
 EOF
         fi
     else
         # Check before clobbering the systemwide default.
-        mv -vi "${tempdir}/default.conf" "${config_dir}/default.conf"
+        echo "Replace systemwide default config with new config?"
+        mv -i "${tempdir}/default.conf" "${config_dir}/default.conf"
     fi
 fi
