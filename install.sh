@@ -152,8 +152,8 @@ echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
 EOF
         fi
     else
-        # Check before clobbering the systemwide default.
-        mv -i "${tempdir}/default.conf" "${config_dir}/default.conf"
+        # Clobbering the systemwide default is OK.
+        mv "${tempdir}/default.conf" "${config_dir}/default.conf"
     fi
     cat <<EOF
 
