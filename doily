@@ -17,15 +17,6 @@ if [[ -e "${CONF_FILE}" ]]; then
 else
     if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
         cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
-        cat <<EOF
-
-Configuration file created in: ${CONF_FILE}
-
-You can take a look if you want to view or change the default settings.
-When you're ready, run doily again to get writing!
-
-EOF
-        exit 0
     else
         cat <<EOF
 
