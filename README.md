@@ -9,7 +9,7 @@ writings in git for you.
 You're free to copy, modify, and distribute Doily, with attribution, under the
 terms of the MIT license. A copy is included in [LICENSE.txt](LICENSE.txt).
 
-To see what's new, read the [change log](CHANGELOG.md).
+To see what's new, read the [changelog](CHANGELOG.md).
 
 
 ## Installation
@@ -41,6 +41,13 @@ bash install.sh --user
 If your `~/bin` directory isn't already in your `$PATH`, the script will print
 some helpful advice for fixing that. Follow it if you need to.
 
+You can now safely remove the install script, if you wish. (You can also use
+it to uninstall doily later.)
+
+```bash
+rm install.sh
+```
+
 
 ## Configuration
 
@@ -51,6 +58,7 @@ at [the default configuration](default.conf).
 
 In a systemwide installation, the default configuration file which is given to
 new Doily users is in `/usr/local/etc/doily/default.conf`.
+
 
 ## Usage
 
@@ -68,6 +76,32 @@ on the same day (before midnight, according to the clock of the computer
 you're writing on), you'll be editing the same file for that day. If the
 day rolls over while you're writing, whatever file you're currently in will
 still be saved under the previous day.
+
+
+## Uninstalling
+
+Doily is self-removing with its install script. If you don't still have it,
+download it again:
+
+```bash
+curl https://raw.githubusercontent.com/relsqui/doily/master/install.sh -o install.sh
+```
+
+To remove a systemwide install:
+
+```bash
+bash install.sh --remove
+```
+
+For a single-user install:
+
+``bash
+bash install.sh --user --remove
+```
+
+In both cases, users' personal configuration files and daily writings will
+not be removed. Running the single-user remove command will print instructions
+for also removing your own personal files.
 
 
 ## Status, Feedback, and Contribution
