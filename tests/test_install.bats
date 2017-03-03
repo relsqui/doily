@@ -1,5 +1,10 @@
 #!/usr/bin/env bats
 
+assertFails() {
+    run "$@"
+    test "${status}" -ne 0
+}
+
 setup() {
     if [ -z "$CI" ]; then
         skip "don't mess with system files outside of CI"
@@ -21,13 +26,13 @@ setup() {
 
 @test "system install doesn't install user files" {
     sudo bash install.sh
-    test ! ls "${HOME}/bin/doily"
-    test ! ls "${HOME}/.config/doily/doily.conf"
+    assertFails ls "${HOME}/bin/doily"
+    assertFails ls "${HOME}/.config/doily/doily.conf"
 }
 
 @test "system install doesn't leave tempfiles" {
     sudo bash install.sh
-    test ! ls "/tmp/doily-*"
+    assertFails ls "/tmp/doily-*"
 }
 
 @test "user install files exist" {
@@ -44,18 +49,16 @@ setup() {
 
 @test "user install doesn't install system files" {
     bash install.sh --user
-    test ! ls /usr/local/bin/doily
-    test ! ls /usr/local/etc/doily/default.conf
+    assertFails ls /usr/local/bin/doily
+    assertFails ls /usr/local/etc/doily/default.conf
 }
 
 @test "user install doesn't leave tempfiles" {
     bash install.sh --user
-    test ! ls "/tmp/doily-*"
+    assertFails ls "/tmp/doily-*"
 }
 
 teardown() {
-    # run eats the return value, which we don't care about
-    # we just want to make sure all our files get cleaned up
     run sudo bash install.sh --remove
     run bash install.sh --user --remove
 }
