@@ -13,4 +13,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Basic documentation.
 * License.
 * Release creation script.
+* Release checklist.
 * Change log. (You don't say?)
