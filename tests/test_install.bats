@@ -1,15 +1,16 @@
 #!/usr/bin/env bats
 
 assertFails() {
-    run "$@"
+    run "$@" >&2
     test "${status}" -ne 0
 }
 
 cleanup() {
-    (sudo bash install.sh --remove
-     bash install.sh --user --remove
-     rm "${HOME}/.config/doily"
-     rm "${HOME}/.local/share/doily") 2>/dev/null || true
+    (sudo rm -f /usr/local/bin/doily
+     sudo rm -rf /usr/local/etc/doily
+     rm -f "${HOME}/bin/doily"
+     rm -rf "${HOME}/.config/doily"
+     rm -rf "${HOME}/.local/share/doily") >&2 || true
 }
 
 setup() {
