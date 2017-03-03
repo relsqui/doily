@@ -53,8 +53,25 @@ if [[ "${ACTION}" == "remove" ]]; then
     if [[ "${TARGET}" == "system" ]]; then
         # Remove the systemwide default, but not user config.
         rm -vr "${config_dir}"
+        cat <<EOF
+The doily binary and default configuration have been removed. Any user data
+(configuration, plugins, and daily files) in home directories is still there.
+EOF
+    else
+        cat <<EOF
+The doily binary has been removed, but your personal settings and writings
+have been left alone. If you really want to remove those, you can do:
+
+rm -r ${config_dir} # to get rid of configuration, plugins, and so on
+EOF
+        # Get the dailies directory, if possible.
+        source "${config_dir}/doily.conf" 2>/dev/null
+        if [[ -z "${doily_dir}" ]]; then
+            echo -e "\n(You don't appear to have any dailies in your currently-configured location.)"
+        else
+            echo "rm -r ${doily_dir} # to get rid of your dailies. This can't be reversed!"
+        fi
     fi
-    echo "Add a note here about user data not being removed, and how to."
 else
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
     #TODO: switch this to use https://github.com/relsqui/doily/archive/${VERSION}.tar.gz
@@ -66,7 +83,15 @@ else
     if [[ "${TARGET}" == "user" ]]; then
         # Don't clobber existing user configuration with the default.
         mv -vn "${tempdir}/default.conf" "${config_dir}/doily.conf"
-        echo "Add a note here about editing your path."
+        if [[ ":$PATH:" != *":$HOME/BIN:"* ]]; then
+            cat <<EOF
+Installed doily as $HOME/bin/doily. It looks like that directory isn't in
+your \$PATH. If you want to be able to just run `doily` without typing the
+full path, you'll need to update your \$PATH. One way to do that is:
+
+echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
+EOF
+        fi
     else
         # Check before clobbering the systemwide default.
         mv -vi "${tempdir}/default.conf" "${config_dir}/default.conf"
