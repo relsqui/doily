@@ -16,21 +16,27 @@ DOILY_SRC="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 if [[ -e "${CONF_FILE}" ]]; then
     source "${CONF_FILE}"
 else
-    cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
-    if [[ "$?" ]]; then
+    if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
+        cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
         cat <<EOF
+
 Configuration file created in: ${CONF_FILE}
 
 You can take a look if you want to view or change the default settings.
-When you're ready, run \`doily\` again to write your first daily!
+When you're ready, run doily again to get writing!
+
 EOF
         exit 0
     else
         cat <<EOF
+
 Couldn't find a default configuration file for you!
 
 This isn't supposed to happen. Please check http://github.com/relsqui/doily
-for an example configuration you can put in ${CONF_FILE}.
+for an example configuration file, then put it in:
+
+${CONF_FILE}
+
 EOF
         exit 1
     fi
