@@ -10,7 +10,6 @@ set -e
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
-DOILY_SRC="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 
 if [[ -e "${CONF_FILE}" ]]; then
@@ -87,14 +86,14 @@ if ! find "${doily_dir}" -maxdepth 0 -empty; then
     # editor was closed without saving), so we check first.
     # The method is taken from: http://stackoverflow.com/a/91769
     chmod "$file_perms" "${doily_dir}/*"
-    chgrp "$doily_group" "${doily_dir}./*"
+    chgrp "$doily_group" "${doily_dir}/*"
 fi
 
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
-    # on, though, it ensures the repo gets created and old dailies are included.
+    # on, though, it ensures the repo gets created and finds old dailies.
     git -C "${doily_dir}" init
-    git -C "${doily_dir}" add .
+    git -C "${doily_dir}" add "${doily_dir}"
     # The commit commands will return non-zero if we didn't commit anything,
     # but that's okay, so add an extra true to keep set -e from exiting.
     if [[ -n "${auto_commit}" ]]; then
@@ -102,10 +101,4 @@ if [[ -n "${use_git}" ]]; then
     else
         git -C "${doily_dir}" commit || true
     fi
-fi
-
-
-if [[ -n "${show_streak}" ]]; then
-    source "${DOILY_SRC}/show_streak.sh"
-    doily::get_streak
 fi
