@@ -7,6 +7,8 @@
 
 set -e
 
+VERSION="0.1.0"
+
 # This complies with the XDG Base Directory Specification:
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
@@ -32,7 +34,6 @@ EOF
         exit 1
     fi
 fi
-
 
 if [[ -n "$public_dailies" ]]; then
     file_perms=644
@@ -64,8 +65,63 @@ elif [[ ! -d "${doily_dir}" ]]; then
     mkdir -p "${doily_dir}"
 fi
 
-# Default to nano if the preferred editor is empty.
-"${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
+doily_command="$1"
+if [[ -z "${doily_command}" ]]; then
+    doily_command="write"
+fi
+
+case "${doily_command}" in
+    config)
+        "${EDITOR:-nano}" "${CONF_FILE}"
+        exit 0
+        ;;
+    help)
+        cat <<EOF
+Doily: a daily writing manager.
+https://github.com/relsqui/doily
+
+Usage: doily [command] [arguments ...]
+
+Commands:
+    config         - Edit your personal configuration file.
+    help           - Print this help.
+    read [d]       - Read the entry for a given [d]ay. Days are accepted in any
+                     format \`date\` understands, from "Feb 18" to "2017/02/18"
+                     to "last week" (see \`date\` documentation for specifics).
+                     The default is today.
+    search [p] [d] - Search for a [p]attern (an extended regex) in the
+                     specified [d]ay. The default pattern is empty. The
+                     default day is the most recent one which has an entry;
+                     days can otherwise be specified like above.
+    version        - Print the installed version number of Doily.
+    write          - Open today's file for writing. (This is the default.)
+EOF
+        exit 0
+        ;;
+    read)
+        target_file=$(date +%F --date="$2")
+        "${PAGER:-less}" "${doily_dir}/${target_file}"
+        exit 0
+        ;;
+    search)
+        if [[ -z "$3" ]]; then
+            lastfile="$(ls ${doily_dir} | tail -n 1)"
+        else
+            lastfile=$(date +%F --date="$3")
+        fi
+        echo "$lastfile"
+        egrep "$2" "${doily_dir}/${lastfile}"
+        exit 0
+        ;;
+    version)
+        echo "doily v${VERSION}"
+        exit 0
+        ;;
+    write)
+        # Default to nano if the preferred editor is empty.
+        "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
+        ;;
+esac
 
 # Set permissions on everything, in case the config has changed.
 # (If you were wondering why the config file says not to use your home
