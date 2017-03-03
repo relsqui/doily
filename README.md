@@ -13,61 +13,53 @@ terms of the MIT license. A copy is included in LICENSE.txt.
 ## Installation
 
 Doily's only absolute prerequisites are `bash` and other utilities that come
-standard on normal linux systems (like `date`). Optional features may have
-other requirements (notably `git`).
+standard on normal Linux systems (like `date`). Optional features may have
+other requirements (notably `git`). The install script uses `curl`. All of
+these should be available in your distribution's package manager (using
+`apt install curl` or similar).
 
-First, grab the code from this repository.
-
-```bash
-git clone https://github.com/relsqui/doily.git
-```
-
-The simplest way to proceed from here is just to cd into the repository and
-run the script directly.
+First, get the install script.
 
 ```bash
-cd doily
-./doily
+curl https://raw.githubusercontent.com/relsqui/doily/install-script/install.sh -o install.sh
 ```
 
-If you want to be able to run `doily` from anywhere, you need to link it
-into somewhere that's in your `$PATH`. For example, you can create a `~/bin`
-directory for yourself and put it there.
+To install Doily systemwide for anyone to use, run it with no arguments.
 
 ```bash
-mkdir ~/bin
-ln -s ./doily ~/bin/doily
+bash install.sh
 ```
 
-Then add this line to your `.bashrc` if it's not already there:
+If you're installing for just yourself, run it with the `--user` flag.
 
-```
-export PATH="$PATH:~/bin"
+```bash
+bash install.sh --user
 ```
 
-After you log out and log back in (or just `source .bashrc`), you should be
-able to type `doily` from any directory to run Doily.
+If your `~/bin` directory isn't already in your `$PATH`, the script will print
+some helpful advice for fixing that. Follow it if you need to.
 
 
 ## Configuration
 
-The first time you run `doily`, it will create a configuration file and echo
-its path.  You can edit that file to change your settings, such as who can
-view your dailies and whether you want to customize your git commit messages.
+Your personal configuration file lives in `.config/doily/doily.conf`, and is
+full of comments explaining what it does. If you want to read all the settings
+and an explanation of them before downloading or running Doily, you can look
+at [the default configuration](default.conf).
 
-If you want to read all the settings and an explanation of them before
-downloading or running Doily, you can look at
-[the default configuration](default.cfg).
-
+In a systemwide installation, the default configuration file which is given to
+new Doily users is in `/usr/local/etc/doily/default.conf`.
 
 ## Usage
 
-After creating your configuration, simply run `doily` again. It will drop
-you into a text editor where you can write whatever you want.
+When you run `doily`, it will drop you directly into a text editor. (You can
+configure which one in your configuration file, or by setting your `$EDITOR`
+environment variable.) Write whatever you came here to write, then save and
+quit the editor like normal. The file will be saved and dated.
 
-When you're done, save and quit the text editor like normal. If you're using
-git and have elected to write your own commit messages, you'll be prompted to
-write a message for the new commit.
+If you're using git and have elected to write your own commit messages, you'll
+be prompted to write a message for the new commit. If you're using automatic
+messages, it will just update the repository for you.
 
 Each day that you run `doily`, a new file will be created. If you run it again
 on the same day (before midnight, according to the clock of the computer
@@ -100,4 +92,4 @@ and features.
 
 ## Why "Doily"?
 
-Because "daily" is ungoogleable.
+Because "daily" is ungoogleable, especially in a software context.

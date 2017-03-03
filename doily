@@ -9,25 +9,27 @@ set -e
 # This complies with the XDG Base Directory Specification:
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
-CONF_FILE="${CONF_DIR}/doily.cfg"
-DOILY_SRC="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+CONF_FILE="${CONF_DIR}/doily.conf"
 
 
 if [[ -e "${CONF_FILE}" ]]; then
     source "${CONF_FILE}"
 else
-    mkdir -p "${CONF_DIR}"
-    # This bit of magic is determining the directory where the script being
-    # executed is located, across symlinks, to get to the example config.
-    # Based on: http://unix.stackexchange.com/a/17500
-    cp "${DOILY_SRC}/default.cfg" "${CONF_FILE}"
-    cat <<EOF
-Configuration file created in: ${CONF_FILE}
+    if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
+        cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+    else
+        cat <<EOF
 
-You can take a look if you want to view or change the default settings.
-When you're ready, run \`doily\` again to write your first daily!
+Couldn't find a default configuration file for you!
+
+This isn't supposed to happen. Please check http://github.com/relsqui/doily
+for an example configuration file, then put it in:
+
+${CONF_FILE}
+
 EOF
-    exit 0
+        exit 1
+    fi
 fi
 
 
@@ -75,14 +77,14 @@ if ! find "${doily_dir}" -maxdepth 0 -empty; then
     # editor was closed without saving), so we check first.
     # The method is taken from: http://stackoverflow.com/a/91769
     chmod "$file_perms" "${doily_dir}/*"
-    chgrp "$doily_group" "${doily_dir}./*"
+    chgrp "$doily_group" "${doily_dir}/*"
 fi
 
 if [[ -n "${use_git}" ]]; then
     # This will usually be excessive but harmless; if use_git is newly turned
-    # on, though, it ensures the repo gets created and old dailies are included.
+    # on, though, it ensures the repo gets created and finds old dailies.
     git -C "${doily_dir}" init
-    git -C "${doily_dir}" add .
+    git -C "${doily_dir}" add "${doily_dir}"
     # The commit commands will return non-zero if we didn't commit anything,
     # but that's okay, so add an extra true to keep set -e from exiting.
     if [[ -n "${auto_commit}" ]]; then
@@ -90,10 +92,4 @@ if [[ -n "${use_git}" ]]; then
     else
         git -C "${doily_dir}" commit || true
     fi
-fi
-
-
-if [[ -n "${show_streak}" ]]; then
-    source "${DOILY_SRC}/show_streak.sh"
-    echo "$(doily::get_streak)"
 fi
