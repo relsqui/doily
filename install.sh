@@ -21,10 +21,10 @@ error_out() {
     if [[ "${TARGET}" == "system" && "${EUID}" != 0 ]]; then
         cat <<EOF
   ***   You seem to be attempting a systemwide operation without root.   ***
-  ***                   Did you mean to use sudo?                        ***
+  ***              Did you mean to use sudo, or --user?                  ***
 EOF
     else
-        echo "Please check any error messages above for errors."
+        echo "Please check any error messages above for information and --help for options"
     fi
     cat <<EOF
 
@@ -84,7 +84,7 @@ fi
 
 if [[ "${ACTION}" == "remove" ]]; then
     echo "Removing doily binary."
-    rm v "${binary_dir}/doily"
+    rm "${binary_dir}/doily"
     if [[ "${TARGET}" == "system" ]]; then
         # Remove the systemwide default, but not user config.
         echo "Removing default configuration. Leaving user data and config."
@@ -93,7 +93,7 @@ if [[ "${ACTION}" == "remove" ]]; then
         cat <<EOF
 
 Your personal settings and writings have been left alone.
-If you really want to remove those, you can do:
+If you really want to remove those, you can paste the following:
 
 # Get rid of configuration, plugins, and so on:
 rm -r ${config_dir}
@@ -122,7 +122,7 @@ else
         # Don't clobber existing user configuration with the default.
         echo "Creating a config file if it didn't already exist."
         mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
-        if [[ ":$PATH:" != *":$HOME/BIN:"* ]]; then
+        if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
             cat <<EOF
 
 Installed doily as $HOME/bin/doily. It looks like that directory
