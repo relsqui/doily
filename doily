@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Doily (c) 2017 Finn Ellis, licensed under MIT.
+# Doily v0.1.0
+# (c) 2017 Finn Ellis, free to use and modify under the MIT license.
 # Manage writing into daily files.
 # https://github.com/relsqui/doily
 

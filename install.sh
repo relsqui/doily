@@ -11,7 +11,7 @@
 set -e
 trap 'error_out "$LINENO"' ERR
 
-VERSION="alpha_testing"
+VERSION="0.1.0"
 BRANCH="master"
 
 error_out() {

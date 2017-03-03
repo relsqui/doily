@@ -28,10 +28,11 @@
 ## Repository Management
 
 * [x] Update or close relevant issues.
-* [ ] Create new package tarball.
-* [ ] Update version in main script.
-* [ ] Update version in install script.
-* [ ] Update changelog version.
-* [ ] Merge branch.
+* [x] Create new package tarball.
+* [x] Update version in main script.
+* [x] Update version in install script.
+* [x] Update version in default config file.
+* [x] Update changelog version.
+* [x] Merge branch.
 * [ ] Tag the release commit.
 * [ ] Reset the checklist, including the version number.
