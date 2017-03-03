@@ -1,12 +1,11 @@
-# Release Checklist
+# Release Checklist for [0.2.0](https://github.com/relsqui/doily/milestone/2)
 
 ## Planning
 
-* [ ] Select issues for the release.
-* [ ] Create milestone.
-* [ ] Update version number and milestone URL on checklist.
-* [ ] Plan changes to installation script, if necessary.
-* [ ] Start branch.
+* [x] Select issues for the release.
+* [x] Create milestone.
+* [x] Update version number and milestone URL on checklist.
+* [x] Plan changes to installation script, if necessary.
 
 ## In Progress
 
@@ -33,6 +32,5 @@
 * [ ] Update version in install script.
 * [ ] Update version in default config file.
 * [ ] Update changelog version.
-* [ ] Merge branch.
 * [ ] Tag the release commit and push with `--tags`.
 * [ ] Reset the checklist.
