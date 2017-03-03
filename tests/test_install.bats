@@ -9,8 +9,11 @@ setup() {
 
 @test "system install files exist" {
     sudo bash install.sh
+    echo "installed"
     ls /usr/local/bin/doily
+    echo "found binary"
     ls /usr/local/etc/doily/default.conf
+    echo "found config"
 }
 
 @test "system install file perms" {
