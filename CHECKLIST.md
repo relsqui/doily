@@ -1,8 +1,8 @@
-# Release Checklist
+# Release Checklist for [v.0.1.0](milestone/1)
 
 ## Planning
 
-* [x] Select issues for the next release.
+* [x] Select issues for the release.
 * [x] Create milestone.
 * [x] Plan changes to installation script, if necessary.
 * [x] Start branch.
@@ -30,8 +30,7 @@
 * [ ] Create new package tarball.
 * [ ] Update version in main script.
 * [ ] Update version in install script.
-* [ ] Update version in README.
 * [ ] Update changelog version.
 * [ ] Merge branch.
 * [ ] Tag the release commit.
-* [ ] Reset the checklist!
+* [ ] Reset the checklist, including the version number.
