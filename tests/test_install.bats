@@ -5,10 +5,18 @@ assertFails() {
     test "${status}" -ne 0
 }
 
+cleanup() {
+    run sudo bash install.sh --remove
+    run bash install.sh --user --remove
+    run rm "${HOME}/.config/doily"
+    run rm "${HOME}/.local/share/doily"
+}
+
 setup() {
     if [ -z "$CI" ]; then
         skip "don't mess with system files outside of CI"
     fi
+    cleanup
 }
 
 @test "system file creation" {
@@ -59,6 +67,5 @@ setup() {
 }
 
 teardown() {
-    run sudo bash install.sh --remove
-    run bash install.sh --user --remove
+    cleanup
 }
