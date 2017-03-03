@@ -5,14 +5,40 @@
 # https://github.com/relsqui/doily
 
 # Install a doily release from the Github repository, either systemwide
-# or for the current user; or, uninstall doily for the system or user.
+# or for the current user; or, remove doily for the system or user.
 # Does not destroy user-specific configuration or data in any case.
 
-# Everything here except VERSION is just for development and testing.
 VERSION="install_test"
 BRANCH="install-script"
-TARGET="user"
+
+args=$(getopt -o urh -l user,remove,help -- $@) || exit 1
+eval set -- "$args"
+
+TARGET="system"
 ACTION="install"
+for arg; do
+    case "$arg" in
+        -u|--user) TARGET="user" ;;
+        -r|--remove) ACTION="remove" ;;
+        -h|--help)
+            cat <<EOF
+usage: bash install.sh [-h|--help] [-u|--user] [-r|--remove]
+
+Install doily (http://github.com/relsqui/doily), a daily writing script.
+With the -u or --user option, install for the current user. Otherwise, install
+systemwide (which makes doily available to all users and requires root).
+With the -r or --remove option, removes doily instead of installing it.
+These options can be combined (use -ur to remove a userspace installation).
+EOF
+            exit 0
+            ;;
+        --) shift ;;
+        *)
+            echo "Unexpected argument: ${arg}. Use --help for help."
+            exit 1
+    esac
+    shift
+done
 
 if [[ "${TARGET}" == "user" ]]; then
     binary_dir="$HOME/bin"
@@ -22,7 +48,7 @@ else
     config_dir="/usr/local/etc/doily"
 fi
 
-if [[ "${ACTION}" == "uninstall" ]]; then
+if [[ "${ACTION}" == "remove" ]]; then
     rm -v "${binary_dir}/doily"
     rm -vr "${config_dir}"
     echo "Add a note here about user data not being removed, and how to."
