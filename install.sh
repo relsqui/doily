@@ -62,14 +62,15 @@ EOF
 The doily binary has been removed, but your personal settings and writings
 have been left alone. If you really want to remove those, you can do:
 
-rm -r ${config_dir} # to get rid of configuration, plugins, and so on
+# Get rid of configuration, plugins, and so on:
+rm -r ${config_dir}
 EOF
         # Get the dailies directory, if possible.
         source "${config_dir}/doily.conf" 2>/dev/null
         if [[ -z "${doily_dir}" ]]; then
             echo -e "\n(You don't appear to have any dailies in your currently-configured location.)"
         else
-            echo "rm -r ${doily_dir} # to get rid of your dailies. This can't be reversed!"
+            echo -e "# Get rid of your dailies. This can't be reversed!\nrm -r ${doily_dir}"
         fi
     fi
 else
@@ -85,9 +86,9 @@ else
         mv -vn "${tempdir}/default.conf" "${config_dir}/doily.conf"
         if [[ ":$PATH:" != *":$HOME/BIN:"* ]]; then
             cat <<EOF
-Installed doily as $HOME/bin/doily. It looks like that directory isn't in
-your \$PATH. If you want to be able to just run `doily` without typing the
-full path, you'll need to update your \$PATH. One way to do that is:
+Installed doily as $HOME/bin/doily. It looks like that directory
+isn't in your \$PATH. If you want to be able to just run `doily` without
+typing the full path, you'll need to something like:
 
 echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
 EOF
