@@ -11,7 +11,7 @@
 VERSION="install_test"
 BRANCH="install-script"
 
-args=$(getopt -o urh -l user,remove,help -- $@) || exit 1
+args=$(getopt -o urh -l user,remove,help -- "$@") || exit 1
 eval set -- "$args"
 
 TARGET="system"
@@ -75,7 +75,6 @@ EOF
     fi
 else
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
-    #TODO: switch this to use https://github.com/relsqui/doily/archive/${VERSION}.tar.gz
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
     curl "${release_url}" | tar -vxzC "${tempdir}"
     mkdir -vp "${binary_dir}" "${config_dir}"
@@ -87,8 +86,8 @@ else
         if [[ ":$PATH:" != *":$HOME/BIN:"* ]]; then
             cat <<EOF
 Installed doily as $HOME/bin/doily. It looks like that directory
-isn't in your \$PATH. If you want to be able to just run `doily` without
-typing the full path, you'll need to something like:
+isn't in your \$PATH. If you want to be able to run doily without typing the
+full path, you'll need to do something like:
 
 echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
 EOF
