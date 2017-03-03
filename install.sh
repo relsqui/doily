@@ -32,6 +32,7 @@ else
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar"
     curl "${release_url}" | tar -vxC "${tempdir}"
     mkdir -vp "${binary_dir}" "${config_dir}"
+    # Clobbering old binary with updated binary is OK.
     mv -v "${tempdir}/doily" "${binary_dir}"
     if [[ "${TARGET}" == "user" ]]; then
         # Don't clobber existing user configuration with the default.
