@@ -1,3 +1,4 @@
 language: bash
 branches: travis
-script: sudo bash install.sh
+before_install: sudo apt install bats
+script: bats tests
