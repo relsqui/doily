@@ -2,14 +2,15 @@
 
 ## Planning
 
-* [x] Issues selected for release.
+* [x] Select issues for the next release.
+* [x] Create milestone.
 * [x] Plan changes to installation script, if necessary.
 * [x] Start branch.
 
 ## In Progress
 
 * [x] Update changelog contents.
-* [x] Run shellcheck.
+* [x] Run shellcheck and revise as needed.
 * [ ] Write tests for new features.
 
 ## Features Ready
