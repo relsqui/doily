@@ -1,9 +1,10 @@
-# Release Checklist for [v.0.1.0](milestone/1)
+# Release Checklist for [v.0.1.0](https://github.com/relsqui/doily/milestone/1)
 
 ## Planning
 
 * [x] Select issues for the release.
 * [x] Create milestone.
+* [x] Update milestone URL on checklist.
 * [x] Plan changes to installation script, if necessary.
 * [x] Start branch.
 
