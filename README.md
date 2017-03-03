@@ -7,10 +7,12 @@ date, maintains permission settings that you choose, and can keep your daily
 writings in git for you.
 
 You're free to copy, modify, and distribute Doily, with attribution, under the
-terms of the MIT license. A copy is included in LICENSE.txt.
+terms of the MIT license. A copy is included in [LICENSE.txt].
+
+To see what's new, read the [change log](CHANGELOG.md).
 
 
-## Installation
+## [Installation]
 
 Doily's only absolute prerequisites are `bash` and other utilities that come
 standard on normal Linux systems (like `date`). Optional features may have
@@ -40,7 +42,7 @@ If your `~/bin` directory isn't already in your `$PATH`, the script will print
 some helpful advice for fixing that. Follow it if you need to.
 
 
-## Configuration
+## [Configuration]
 
 Your personal configuration file lives in `.config/doily/doily.conf`, and is
 full of comments explaining what it does. If you want to read all the settings
@@ -50,7 +52,7 @@ at [the default configuration](default.conf).
 In a systemwide installation, the default configuration file which is given to
 new Doily users is in `/usr/local/etc/doily/default.conf`.
 
-## Usage
+## [Usage]
 
 When you run `doily`, it will drop you directly into a text editor. (You can
 configure which one in your configuration file, or by setting your `$EDITOR`
@@ -68,7 +70,7 @@ day rolls over while you're writing, whatever file you're currently in will
 still be saved under the previous day.
 
 
-## Status, Feedback, and Contribution
+## [Status, Feedback, and Contribution]
 
 Doily is currently in alpha, prior to its
 [first numbered version release](https://github.com/relsqui/doily/milestone/1),
@@ -85,11 +87,11 @@ and features.
 
 * Have a bug report, idea, or request? Please add them to the
   [issue tracker](https://github.com/relsqui/doily/issues).
-* Want to contribute? Yay! Please comment on or create an issue first so we can
-  discuss what you want to do before you make a
+* Want to contribute? Yay! Please comment on or create an issue first so we
+  can discuss what you want to do before you make a
   [pull request](https://www.thinkful.com/learn/github-pull-request-tutorial/).
-* When in doubt, feel free to just [email me](mailto:relsqui@chiliahedron.com).
+* When in doubt, feel free to [email me](mailto:relsqui@chiliahedron.com).
 
-## Why "Doily"?
+## [Why "Doily"?]
 
 Because "daily" is ungoogleable, especially in a software context.
