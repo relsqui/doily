@@ -5,19 +5,10 @@ assertFails() {
     test "${status}" -ne 0
 }
 
-cleanup() {
-    (sudo rm -f /usr/local/bin/doily
-     sudo rm -rf /usr/local/etc/doily
-     rm -f "${HOME}/bin/doily"
-     rm -rf "${HOME}/.config/doily"
-     rm -rf "${HOME}/.local/share/doily") >&2 || true
-}
-
 setup() {
     if [ -z "$CI" ]; then
         skip "don't mess with system files outside of CI"
     fi
-    cleanup
 }
 
 @test "system file creation" {
@@ -68,5 +59,9 @@ setup() {
 }
 
 teardown() {
-    cleanup
+    (sudo rm -f /usr/local/bin/doily
+     sudo rm -rf /usr/local/etc/doily
+     rm -f "${HOME}/bin/doily"
+     rm -rf "${HOME}/.config/doily"
+     rm -rf "${HOME}/.local/share/doily") || true
 }
