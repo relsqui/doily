@@ -13,7 +13,6 @@ setup() {
 }
 
 @test "system install file perms" {
-    skip "to see if this is the one holding up the build"
     sudo bash install.sh
     test -x /usr/local/bin/doily
     test ! -x /usr/local/etc/doily/default.conf
@@ -51,4 +50,8 @@ setup() {
 @test "user install doesn't leave tempfiles" {
     bash install.sh --user
     test ! ls "/tmp/doily-*"
+}
+
+teardown() {
+    echo "finished with test #${BATS_TEST_NUMBER} (${BATS_TEST_DESCRIPTION})"
 }
