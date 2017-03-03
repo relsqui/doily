@@ -72,24 +72,13 @@ still be saved under the previous day.
 
 ## Status, Feedback, and Contribution
 
-Doily is currently in alpha, prior to its
-[first numbered version release](https://github.com/relsqui/doily/milestone/1),
-which will respect [semantic versioning](http://semver.org). Consequently,
-*the interface may change suddenly* while new features are added and tested.
-I strongly encourage you to play with Doily and report back, but if you're
-writing things that are important to you, please back them up somewhere safe!
-(One way to do this would be to enable `use_git` and periodically `git pull`
-the resulting repository to another directory.)
-
-For the same reason, it's a little early to be adding large amounts of new
-feature code, and a great time for suggestions and comments about architecture
-and features.
-
 * Have a bug report, idea, or request? Please add them to the
   [issue tracker](https://github.com/relsqui/doily/issues).
 * Want to contribute? Yay! Please comment on or create an issue first so we
   can discuss what you want to do before you make a
   [pull request](https://www.thinkful.com/learn/github-pull-request-tutorial/).
+* You can view progress towards the next build on the
+  [release checklist](CHECKLIST.md).
 * When in doubt, feel free to [email me](mailto:relsqui@chiliahedron.com).
 
 ## Why "Doily"?
