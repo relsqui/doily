@@ -34,5 +34,5 @@
 * [ ] Update version in default config file.
 * [ ] Update changelog version.
 * [ ] Merge branch.
-* [ ] Tag the release commit.
+* [ ] Tag the release commit and push with `--tags`.
 * [ ] Reset the checklist.
