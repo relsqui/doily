@@ -28,6 +28,7 @@ if [[ "${ACTION}" == "uninstall" ]]; then
     echo "Add a note here about user data not being removed, and how to."
 else
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
+    #TODO: switch this to use https://github.com/relsqui/doily/archive/${VERSION}.tar.gz, which will also require changing the tar command
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar"
     curl "${release_url}" | tar -vxC "${tempdir}"
     mkdir -vp "${binary_dir}" "${config_dir}"

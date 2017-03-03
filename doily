@@ -9,25 +9,31 @@ set -e
 # This complies with the XDG Base Directory Specification:
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
-CONF_FILE="${CONF_DIR}/doily.cfg"
+CONF_FILE="${CONF_DIR}/doily.conf"
 DOILY_SRC="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 
 if [[ -e "${CONF_FILE}" ]]; then
     source "${CONF_FILE}"
 else
-    mkdir -p "${CONF_DIR}"
-    # This bit of magic is determining the directory where the script being
-    # executed is located, across symlinks, to get to the example config.
-    # Based on: http://unix.stackexchange.com/a/17500
-    cp "${DOILY_SRC}/default.cfg" "${CONF_FILE}"
-    cat <<EOF
+    cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+    if [[ "$?" ]]; then
+        cat <<EOF
 Configuration file created in: ${CONF_FILE}
 
 You can take a look if you want to view or change the default settings.
 When you're ready, run \`doily\` again to write your first daily!
 EOF
-    exit 0
+        exit 0
+    else
+        cat <<EOF
+Couldn't find a default configuration file for you!
+
+This isn't supposed to happen. Please check http://github.com/relsqui/doily
+for an example configuration you can put in ${CONF_FILE}.
+EOF
+        exit 1
+    fi
 fi
 
 
