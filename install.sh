@@ -50,7 +50,10 @@ fi
 
 if [[ "${ACTION}" == "remove" ]]; then
     rm -v "${binary_dir}/doily"
-    rm -vr "${config_dir}"
+    if [[ "${TARGET}" == "system" ]]; then
+        # Remove the systemwide default, but not user config.
+        rm -vr "${config_dir}"
+    fi
     echo "Add a note here about user data not being removed, and how to."
 else
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
