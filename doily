@@ -101,5 +101,5 @@ fi
 
 if [[ -n "${show_streak}" ]]; then
     source "${DOILY_SRC}/show_streak.sh"
-    echo "$(doily::get_streak)"
+    doily::get_streak
 fi

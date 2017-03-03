@@ -8,8 +8,38 @@
 # or for the current user; or, remove doily for the system or user.
 # Does not destroy user-specific configuration or data in any case.
 
+set -e
+trap error_out ERR
+
 VERSION="install_test"
 BRANCH="install-script"
+
+error_out() {
+    if [[ -z "${ACTION}" ]]; then
+        ACTION="requested"
+    fi
+    echo
+    echo "The install script was unable to complete the ${ACTION} operation."
+    echo
+    if [[ "${TARGET}" == "system" && "${EUID}" != 0 ]]; then
+        echo "You seem to be attempting a systemwide operation without root."
+        echo "Did you mean to use sudo?"
+    else
+        echo "Please check any error messages above for errors."
+    fi
+    cat <<EOF
+
+If that doesn't help, you can open an issue by going to:
+
+    https://github.com/relsqui/doily/issues
+
+Use the search box to see if there's already a solution to your problem.
+If not, click on the "new issue" button and explain what happened.
+Please include ALL of the install script output in your report. Thanks!
+
+EOF
+    exit 2
+}
 
 args=$(getopt -o urh -l user,remove,help -- "$@") || exit 1
 eval set -- "$args"
