@@ -95,7 +95,7 @@ bash install.sh --remove
 
 For a single-user install:
 
-``bash
+```bash
 bash install.sh --user --remove
 ```
 
