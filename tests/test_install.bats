@@ -55,6 +55,6 @@ setup() {
 teardown() {
     # run eats the return value, which we don't care about
     # we just want to make sure all our files get cleaned up
-    run bash install.sh --remove
+    run sudo bash install.sh --remove
     run bash install.sh --user --remove
 }

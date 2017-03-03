@@ -92,11 +92,11 @@ fi
 
 if [[ "${ACTION}" == "remove" ]]; then
     echo "Removing doily binary."
-    rm "${binary_dir}/doily"
+    rm -f "${binary_dir}/doily"
     if [[ "${TARGET}" == "system" ]]; then
         # Remove the systemwide default, but not user config.
         echo "Removing default configuration. Leaving user data and config."
-        rm -r "${config_dir}"
+        rm -rf "${config_dir}"
     else
         cat <<EOF
 
@@ -104,7 +104,7 @@ Your personal settings and writings have been left alone.
 If you really want to remove those, you can paste the following:
 
 # Get rid of configuration, plugins, and so on:
-rm -r ${config_dir}
+rm -rf ${config_dir}
 EOF
         # Try to find dailies directory, but don't error out if we fail.
         source "${config_dir}/doily.conf" 2>/dev/null || true
@@ -116,7 +116,6 @@ Couldn't determine what your dailies directory is.
 
 EOF
         else
-            # We use -f here because of the possibility of .git directories.
             cat <<EOF
 # Get rid of your dailies. This can't be reversed!
 rm -rf ${doily_dir}
@@ -127,7 +126,7 @@ EOF
 else
     echo "Setting up temp directory."
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
-    trap 'rm -r "${tempdir}"; echo "Removing temp directory."' EXIT
+    trap 'rm -rf "${tempdir}"; echo "Removing temp directory."' EXIT
     echo "Fetching doily files and unpacking them."
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
     curl -s "${release_url}" | tar -xzC "${tempdir}"
