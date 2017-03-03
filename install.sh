@@ -24,7 +24,10 @@ error_out() {
   ***              Did you mean to use sudo, or --user?                  ***
 EOF
     else
-        echo "Please check any error messages above for information and --help for options"
+        cat <<EOF
+Check for error messages above. You can also use the --help option to get
+more information about using the doily install script.
+EOF
     fi
     cat <<EOF
 
@@ -60,10 +63,13 @@ for arg; do
 usage: bash install.sh [-h|--help] [-u|--user] [-r|--remove]
 
 Install doily (http://github.com/relsqui/doily), a daily writing script.
-With the -u or --user option, install for the current user. Otherwise, install
-systemwide (which makes doily available to all users and requires root).
-With the -r or --remove option, removes doily instead of installing it.
-These options can be combined (use -ur to remove a userspace installation).
+Defaults to systemwide installation, which requires superuser privileges.
+
+Options:
+    -h --help   Display this help message.
+    -u --user   Install for the current user only.
+    -r --remove Remove doily rather than installing it.
+                This can be combined with -u to remove a user install.
 EOF
             exit 0
             ;;
@@ -76,6 +82,8 @@ done
 
 if [[ "${TARGET}" == "user" ]]; then
     binary_dir="$HOME/bin"
+    # This complies with the XDG Base Directory Specification:
+    # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
     config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 else
     binary_dir="/usr/local/bin"
@@ -98,12 +106,22 @@ If you really want to remove those, you can paste the following:
 # Get rid of configuration, plugins, and so on:
 rm -r ${config_dir}
 EOF
-        # Get the dailies directory, if possible.
-        source "${config_dir}/doily.conf" 2>/dev/null
+        # Try to find dailies directory, but don't error out if we fail.
+        source "${config_dir}/doily.conf" 2>/dev/null || true
         if [[ -z "${doily_dir}" ]]; then
-            echo -e "\n(You don't appear to have any dailies in your currently-configured location.)\n"
+            cat <<EOF
+
+Couldn't determine what your dailies directory is.
+(Did you already delete your configuration file?)
+
+EOF
         else
-            echo -e "# Get rid of your dailies. This can't be reversed!\nrm -r ${doily_dir}\n"
+            # We use -f here because of the possibility of .git directories.
+            cat <<EOF
+# Get rid of your dailies. This can't be reversed!
+rm -rf ${doily_dir}
+
+EOF
         fi
     fi
 else
@@ -135,7 +153,11 @@ EOF
         fi
     else
         # Check before clobbering the systemwide default.
-        echo "Replace systemwide default config with new config?"
         mv -i "${tempdir}/default.conf" "${config_dir}/default.conf"
     fi
+    cat <<EOF
+
+  *** Success! Doily installed. ***
+
+EOF
 fi
