@@ -9,21 +9,20 @@
 # Does not destroy user-specific configuration or data in any case.
 
 set -e
-trap error_out ERR
+trap 'error_out "$LINENO"' ERR
 
 VERSION="install_test"
 BRANCH="install-script"
 
 error_out() {
-    if [[ -z "${ACTION}" ]]; then
-        ACTION="requested"
-    fi
     echo
-    echo "The install script was unable to complete the ${ACTION} operation."
+    echo "The doily install script exited with an error on line ${1}."
     echo
     if [[ "${TARGET}" == "system" && "${EUID}" != 0 ]]; then
-        echo "You seem to be attempting a systemwide operation without root."
-        echo "Did you mean to use sudo?"
+        cat <<EOF
+  ***   You seem to be attempting a systemwide operation without root.   ***
+  ***                   Did you mean to use sudo?                        ***
+EOF
     else
         echo "Please check any error messages above for errors."
     fi
@@ -33,9 +32,9 @@ If that doesn't help, you can open an issue by going to:
 
     https://github.com/relsqui/doily/issues
 
-Use the search box to see if there's already a solution to your problem.
+Use the search box to see if someone has already reported the same problem.
 If not, click on the "new issue" button and explain what happened.
-Please include ALL of the install script output in your report. Thanks!
+Please include ALL of the install script output in your description. Thanks!
 
 EOF
     exit 2
@@ -48,8 +47,14 @@ TARGET="system"
 ACTION="install"
 for arg; do
     case "$arg" in
-        -u|--user) TARGET="user" ;;
-        -r|--remove) ACTION="remove" ;;
+        -u|--user)
+            TARGET="user"
+            shift
+            ;;
+        -r|--remove)
+            ACTION="remove";
+            shift
+            ;;
         -h|--help)
             cat <<EOF
 usage: bash install.sh [-h|--help] [-u|--user] [-r|--remove]
@@ -67,7 +72,6 @@ EOF
             echo "Unexpected argument: ${arg}. Use --help for help."
             exit 1
     esac
-    shift
 done
 
 if [[ "${TARGET}" == "user" ]]; then
@@ -105,6 +109,7 @@ EOF
     fi
 else
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
+    trap 'rm -vr "${tempdir}"' EXIT
     release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
     curl "${release_url}" | tar -vxzC "${tempdir}"
     mkdir -vp "${binary_dir}" "${config_dir}"
@@ -126,5 +131,4 @@ EOF
         # Check before clobbering the systemwide default.
         mv -vi "${tempdir}/default.conf" "${config_dir}/default.conf"
     fi
-    rm -vr "${tempdir}"
 fi
