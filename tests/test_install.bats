@@ -6,10 +6,10 @@ assertFails() {
 }
 
 cleanup() {
-    run sudo bash install.sh --remove
-    run bash install.sh --user --remove
-    run rm "${HOME}/.config/doily"
-    run rm "${HOME}/.local/share/doily"
+    (sudo bash install.sh --remove
+     bash install.sh --user --remove
+     rm "${HOME}/.config/doily"
+     rm "${HOME}/.local/share/doily") 2>/dev/null || true
 }
 
 setup() {
