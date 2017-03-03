@@ -21,7 +21,7 @@ these should be available in your distribution's package manager (using
 First, get the install script.
 
 ```bash
-curl https://raw.githubusercontent.com/relsqui/doily/install-script/install.sh -o install.sh
+curl https://raw.githubusercontent.com/relsqui/doily/master/install.sh -o install.sh
 ```
 
 To install Doily systemwide for anyone to use, run it with no arguments.
