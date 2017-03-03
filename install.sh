@@ -11,8 +11,8 @@
 set -e
 trap 'error_out "$LINENO"' ERR
 
-VERSION="install_test"
-BRANCH="install-script"
+VERSION="alpha_testing"
+BRANCH="master"
 
 error_out() {
     echo
