@@ -88,7 +88,8 @@ Commands:
     read [d]       - Read the entry for a given [d]ay. Days are accepted in any
                      format \`date\` understands, from "Feb 18" to "2017/02/18"
                      to "last week" (see \`date\` documentation for specifics).
-                     The default is today.
+                     The date "last" is also a special case interpreted as "the
+                     most recent entry, whenever it was." The default is today.
     search [p] [d] - Search for a [p]attern (an extended regex) in the
                      specified [d]ay. The default pattern is empty. The
                      default day is the most recent one which has an entry;
@@ -99,8 +100,12 @@ EOF
         exit 0
         ;;
     read)
-        target_file=$(date +%F --date="$2")
-        "${PAGER:-less}" "${doily_dir}/${target_file}"
+        if [[ "$2" == "last" ]]; then
+            target="$(ls ${doily_dir} | tail -n 1)"
+        else
+            target=$(date +%F --date="$2")
+        fi
+        "${PAGER:-less}" "${doily_dir}/${target}"
         exit 0
         ;;
     search)
@@ -120,6 +125,10 @@ EOF
     write)
         # Default to nano if the preferred editor is empty.
         "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
+        ;;
+    *)
+        echo "Use \`doily help\` to see help and other commands."
+        exit 1
         ;;
 esac
 
