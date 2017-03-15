@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
 ## Unreleased
+### Added
+
+* Commands. Use `doily help` to see the list and their descriptions.
+
 ### Changed
 
 * Updated documentation to include uninstallation.
+* Updated release checklist.
 
 
 ## [0.1.0] - 2017-03-03
