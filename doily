@@ -89,18 +89,19 @@ Commands:
                      format \`date\` understands, from "Feb 18" to "2017/02/18"
                      to "last week" (see \`date\` documentation for specifics).
                      The date "last" is also a special case interpreted as "the
-                     most recent entry, whenever it was." The default is today.
+                     most recent entry, whenever it was," which is the default.
     search [p] [d] - Search for a [p]attern (an extended regex) in the
                      specified [d]ay. The default pattern is empty. The
                      default day is the most recent one which has an entry;
                      days can otherwise be specified like above.
     version        - Print the installed version number of Doily.
-    write          - Open today's file for writing. (This is the default.)
+    write          - Open today's file for writing. This is the default command
+                     if no other one is specified.
 EOF
         exit 0
         ;;
     read)
-        if [[ "$2" == "last" ]]; then
+        if [[ "$2" == "last" || -z "$2" ]]; then
             target="$(ls ${doily_dir} | tail -n 1)"
         else
             target=$(date +%F --date="$2")
