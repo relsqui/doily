@@ -4,16 +4,12 @@ setup() {
     if [ -z "$CI" ]; then
         skip "don't mess with system files outside of CI"
     fi
-    echo "starting test #${BATS_TEST_NUMBER} (${BATS_TEST_DESCRIPTION})"
 }
 
 @test "system file creation" {
     sudo bash install.sh
-    echo "installed"
     ls /usr/local/bin/doily
-    echo "found binary"
     ls /usr/local/etc/doily/default.conf
-    echo "found config"
 }
 
 @test "system install file perms" {
