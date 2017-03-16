@@ -14,11 +14,16 @@ trap 'error_out "$LINENO"' ERR
 VERSION="0.1.0"
 BRANCH="master"
 
+target="system"
+action="install"
+binary_dir="/usr/local/bin"
+config_dir="/usr/local/etc/doily"
+
 error_out() {
     echo
     echo "The doily install script exited with an error on line ${1}."
     echo
-    if [[ "${TARGET}" == "system" && "${EUID}" != 0 ]]; then
+    if [[ "${target}" == "system" && "${EUID}" != 0 ]]; then
         cat <<EOF
   ***   You seem to be attempting a systemwide operation without root.   ***
   ***              Did you mean to use sudo, or --user?                  ***
@@ -43,57 +48,48 @@ EOF
     exit 2
 }
 
-args=$(getopt -o urh -l user,remove,help -- "$@") || exit 1
-eval set -- "$args"
-
-TARGET="system"
-ACTION="install"
-for arg; do
-    case "$arg" in
-        -u|--user)
-            TARGET="user"
-            shift
-            ;;
-        -r|--remove)
-            ACTION="remove";
-            shift
-            ;;
-        -h|--help)
+install() {
+    echo "Setting up temp directory."
+    tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
+    trap 'rm -r "${tempdir}"; echo "Removing temp directory."' EXIT
+    echo "Fetching doily files and unpacking them."
+    release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
+    curl -s "${release_url}" | tar -xzC "${tempdir}"
+    echo "Creating directories."
+    mkdir -p "${binary_dir}" "${config_dir}"
+    # Clobbering old binary with updated binary is OK.
+    echo "Moving binary into place."
+    mv "${tempdir}/doily" "${binary_dir}"
+    if [[ "$1" == "user" ]]; then
+        # Don't clobber existing user configuration with the default.
+        echo "Creating a config file if it didn't already exist."
+        mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
+        if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
             cat <<EOF
-usage: bash install.sh [-h|--help] [-u|--user] [-r|--remove]
 
-Install doily (http://github.com/relsqui/doily), a daily writing script.
-Defaults to systemwide installation, which requires superuser privileges.
+Installed doily as $HOME/bin/doily. It looks like that directory
+isn't in your \$PATH. If you want to be able to run doily without typing the
+full path, you'll need to do something like:
 
-Options:
-    -h --help   Display this help message.
-    -u --user   Install for the current user only.
-    -r --remove Remove doily rather than installing it.
-                This can be combined with -u to remove a user install.
+echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
+
 EOF
-            exit 0
-            ;;
-        --) shift ;;
-        *)
-            echo "Unexpected argument: ${arg}. Use --help for help."
-            exit 1
-    esac
-done
+        fi
+    else
+        # Check before clobbering the systemwide default.
+        mv -i "${tempdir}/default.conf" "${config_dir}/default.conf"
+    fi
+    cat <<EOF
 
-if [[ "${TARGET}" == "user" ]]; then
-    binary_dir="$HOME/bin"
-    # This complies with the XDG Base Directory Specification:
-    # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-    config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
-else
-    binary_dir="/usr/local/bin"
-    config_dir="/usr/local/etc/doily"
-fi
+*** Success! Doily installed. ***
 
-if [[ "${ACTION}" == "remove" ]]; then
+EOF
+}
+
+uninstall() {
     echo "Removing doily binary."
-    rm -f "${binary_dir}/doily"
-    if [[ "${TARGET}" == "system" ]]; then
+    rm "${binary_dir}/doily"
+    if [[ "${target}" == "system" ]]; then
         # Remove the systemwide default, but not user config.
         echo "Removing default configuration. Leaving user data and config."
         rm -rf "${config_dir}"
@@ -141,22 +137,55 @@ else
         mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
         if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
             cat <<EOF
+}
 
-Installed doily as $HOME/bin/doily. It looks like that directory
-isn't in your \$PATH. If you want to be able to run doily without typing the
-full path, you'll need to do something like:
+main() {
+    args=$(getopt -o urh -l user,remove,help -- "$@") || exit 1
+    eval set -- "$args"
 
-echo 'export PATH="\$PATH:\$HOME/bin"' >> .bashrc && source .bashrc
+    for arg; do
+        case "$arg" in
+            -u|--user)
+                target="user"
+                binary_dir="$HOME/bin"
+                # This complies with the XDG Base Directory Specification:
+                # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+                config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
+                shift
+                ;;
+            -r|--remove)
+                action="remove";
+                shift
+                ;;
+            -h|--help)
+                cat <<EOF
+usage: bash install.sh [-h|--help] [-u|--user] [-r|--remove]
 
+Install doily (http://github.com/relsqui/doily), a daily writing script.
+Defaults to systemwide installation, which requires superuser privileges.
+
+Options:
+    -h --help   Display this help message.
+    -u --user   Install for the current user only.
+    -r --remove Remove doily rather than installing it.
+                This can be combined with -u to remove a user install.
 EOF
-        fi
+                exit 0
+                ;;
+            --) shift ;;
+            *)
+                echo "Unexpected argument: ${arg}. Use --help for help."
+                exit 1
+        esac
+    done
+
+    if [[ "${action}" == "remove" ]]; then
+        uninstall
     else
         # Clobbering the systemwide default is OK.
         mv "${tempdir}/default.conf" "${config_dir}/default.conf"
+        install
     fi
-    cat <<EOF
+}
 
-  *** Success! Doily installed. ***
-
-EOF
-fi
+main $@
