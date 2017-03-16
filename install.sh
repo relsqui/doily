@@ -14,7 +14,7 @@ set -e
 trap 'error_out "$LINENO"' ERR
 
 # Constants specify where to get the build from.
-VERSION="0.1.0"
+VERSION="0.1.1"
 BRANCH="master"
 
 # Defaults, may be modified by options.
