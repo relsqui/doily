@@ -119,24 +119,6 @@ rm -rf ${doily_dir}
 EOF
         fi
     fi
-else
-    echo "Setting up temp directory."
-    tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
-    trap 'rm -rf "${tempdir}"; echo "Removing temp directory."' EXIT
-    echo "Fetching doily files and unpacking them."
-    release_url="https://raw.githubusercontent.com/relsqui/doily/${BRANCH}/releases/doily-${VERSION}.tar.gz"
-    curl -s "${release_url}" | tar -xzC "${tempdir}"
-    echo "Creating directories."
-    mkdir -p "${binary_dir}" "${config_dir}"
-    # Clobbering old binary with updated binary is OK.
-    echo "Moving binary into place."
-    mv "${tempdir}/doily" "${binary_dir}"
-    if [[ "${TARGET}" == "user" ]]; then
-        # Don't clobber existing user configuration with the default.
-        echo "Creating a config file if it didn't already exist."
-        mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
-        if [[ ":$PATH:" != *":$HOME/bin:"* ]]; then
-            cat <<EOF
 }
 
 main() {
