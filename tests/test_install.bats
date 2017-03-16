@@ -57,6 +57,22 @@ setup() {
     assertFails ls "/tmp/doily-*"
 }
 
+@test "systemwide uninstall removes files" {
+    sudo bash install.sh
+    sudo bash install.sh --remove
+    assertFails ls /usr/local/bin/doily
+    assertFails ls /usr/local/etc/doily
+}
+
+@test "systemwide uninstall leaves user files" {
+    sudo bash install.sh
+    export EDITOR=touch
+    doily
+    ls "~/.local/share/doily/dailies/$(date +%F)"
+    sudo bash install.sh --remove
+    ls "~/.local/share/doily/dailies/$(date +%F)"
+}
+
 teardown() {
     (sudo rm -f /usr/local/bin/doily
      sudo rm -rf /usr/local/etc/doily
