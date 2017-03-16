@@ -1,12 +1,14 @@
 #!/bin/bash
 
+################################################################################
 # Doily install script.
 # (c) 2017 Finn Ellis, licensed under MIT.
 # https://github.com/relsqui/doily
-
+#
 # Install a doily release from the Github repository, either systemwide
 # or for the current user; or, remove doily for the system or user.
 # Does not destroy user-specific configuration or data in any case.
+################################################################################
 
 set -e
 trap 'error_out "$LINENO"' ERR
@@ -23,7 +25,8 @@ config_dir="/usr/local/etc/doily"
 
 error_out() {
     ############################################################################
-    # Exit cleanly, offering suggestions if necessary.
+    # Exit cleanly on error, offering suggestions to fix the problem if known.
+    #
     # Globals:
     #    - target
     # Environment:
@@ -64,6 +67,7 @@ EOF
 install() {
     ############################################################################
     # Installs Doily for either the local user or the entire system.
+    #
     # Globals:
     #    - BRANCH
     #    - VERSION
@@ -117,6 +121,7 @@ uninstall() {
     # Removes the Doily binary, either from the local userspace or from the
     # entire system. Does not remove personal daily files in either case, but
     # when uninstalling for a user, instructs them in how to do so.
+    #
     # Globals:
     #    - binary_dir
     #    - config_dir
@@ -162,7 +167,8 @@ EOF
 
 main() {
     ############################################################################
-    # Parses arguments and responds appropriately.
+    # Parses arguments and initiates install/remove action or displays help.
+    #
     # Globals:
     #    - binary_dir (sets)
     #    - config_dir (sets)
