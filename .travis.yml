@@ -2,5 +2,5 @@ language: bash
 branches: travis
 before_install:
     - git clone https://github.com/sstephenson/bats.git && cd bats && sudo ./install.sh /usr/local && cd -
-install: bash install.sh
+install: true
 script: bats tests
