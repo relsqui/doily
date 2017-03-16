@@ -60,7 +60,7 @@ install() {
     # Clobbering old binary with updated binary is OK.
     echo "Moving binary into place."
     mv "${tempdir}/doily" "${binary_dir}"
-    if [[ "$1" == "user" ]]; then
+    if [[ "${target}" == "user" ]]; then
         # Don't clobber existing user configuration with the default.
         echo "Creating a config file if it didn't already exist."
         mv -n "${tempdir}/default.conf" "${config_dir}/doily.conf"
