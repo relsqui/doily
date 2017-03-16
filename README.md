@@ -52,9 +52,9 @@ rm install.sh
 ## Configuration
 
 The default configuration keeps all your dailies private, doesn't use git, and
-uses your existing default editor and a sensible storage location. You can
-change these things by running `doily config`. If you want to read all the
-settings and an explanation of them before downloading or running Doily, you
+uses your existing default editor and pager and a sensible storage location.
+You can change these things by running `doily config`. If you want to read all
+the settings and an explanation of them before downloading or running Doily, you
 can look at [the default configuration](default.conf).
 
 In a systemwide installation, the default configuration file which is given to
