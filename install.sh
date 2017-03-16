@@ -164,8 +164,6 @@ EOF
     if [[ "${action}" == "remove" ]]; then
         uninstall
     else
-        # Clobbering the systemwide default is OK.
-        mv "${tempdir}/default.conf" "${config_dir}/default.conf"
         install
     fi
 }
