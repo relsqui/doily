@@ -20,8 +20,6 @@ if [[ -e "${CONF_FILE}" ]]; then
 else
     if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
         mkdir -p "${CONF_DIR}"
-        echo $?
-        ls "${CONF_DIR}"
         cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
     else
         cat <<EOF
