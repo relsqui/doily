@@ -7,7 +7,7 @@
 
 set -e
 
-VERSION="0.1.1"
+VERSION="0.1.2"
 
 # This complies with the XDG Base Directory Specification:
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
@@ -21,6 +21,7 @@ else
     if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
         mkdir -p "${CONF_DIR}"
         cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+        source "${CONF_FILE}"
     else
         cat <<EOF
 
@@ -51,16 +52,16 @@ fi
 
 if [[ -z "${doily_dir}" ]]; then
     echo "No storage location set for Doily!"\
-         "Please set one by editing ${CONF_FILE}" 1>&2
+         "Please set one by running \`doily config\`." 1>&2
     exit 1
 elif [[ "${doily_dir}" != /* ]]; then
     # If it starts with ~, the shell will expand it before it gets here.
     echo "Your Doily directory is set to a relative path, which is"\
-         "unsafe. Please change it by editing ${CONF_FILE}" 1>&2
+         "unsafe. Please change it by running \`doily config\`." 1>&2
     exit 1
 elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
     echo "Your Doily directory is set to your home directory, which is"\
-         "unsafe. Please change it by editing ${CONF_FILE}" 1>&2
+         "unsafe. Please change it by running \`doily config\`." 1>&2
     exit 1
 elif [[ ! -d "${doily_dir}" ]]; then
     mkdir -p "${doily_dir}"
