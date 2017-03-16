@@ -68,9 +68,9 @@ setup() {
     sudo bash install.sh
     export EDITOR=touch
     doily
-    ls "~/.local/share/doily/dailies/$(date +%F)"
+    ls "${HOME}/.local/share/doily/dailies/$(date +%F)"
     sudo bash install.sh --remove
-    ls "~/.local/share/doily/dailies/$(date +%F)"
+    ls "${HOME}/.local/share/doily/dailies/$(date +%F)"
 }
 
 teardown() {
