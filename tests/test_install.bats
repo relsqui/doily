@@ -18,7 +18,6 @@ setup() {
 }
 
 @test "system install file perms" {
-    skip "to see if this is the one holding up the build"
     sudo bash install.sh
     test -x /usr/local/bin/doily
     test ! -x /usr/local/etc/doily/default.conf
