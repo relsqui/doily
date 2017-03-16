@@ -11,17 +11,30 @@
 set -e
 trap 'error_out "$LINENO"' ERR
 
+# Constants specify where to get the build from.
 VERSION="0.1.0"
 BRANCH="master"
 
+# Defaults, may be modified by options.
 target="system"
 action="install"
 binary_dir="/usr/local/bin"
 config_dir="/usr/local/etc/doily"
 
 error_out() {
+    ############################################################################
+    # Exit cleanly, offering suggestions if necessary.
+    # Globals:
+    #    - target
+    # Environment:
+    #    - EUID
+    # Args:
+    #    - Line number of the error (provided by trap).
+    # Returns:
+    #    - Nothing.
+    ############################################################################
     echo
-    echo "The doily install script exited with an error on line ${1}."
+    echo "The doily install script exited with an error on line $1."
     echo
     if [[ "${target}" == "system" && "${EUID}" != 0 ]]; then
         cat <<EOF
@@ -49,6 +62,19 @@ EOF
 }
 
 install() {
+    ############################################################################
+    # Installs Doily for either the local user or the entire system.
+    # Globals:
+    #    - BRANCH
+    #    - VERSION
+    #    - binary_dir
+    #    - config_dir
+    #    - target
+    # Args:
+    #    - None.
+    # Returns:
+    #    - None.
+    ############################################################################
     echo "Setting up temp directory."
     tempdir="$(mktemp --tmpdir -dt doily-XXXXX)"
     trap 'rm -r "${tempdir}"; echo "Removing temp directory."' EXIT
@@ -87,6 +113,19 @@ EOF
 }
 
 uninstall() {
+    ############################################################################
+    # Removes the Doily binary, either from the local userspace or from the
+    # entire system. Does not remove personal daily files in either case, but
+    # when uninstalling for a user, instructs them in how to do so.
+    # Globals:
+    #    - binary_dir
+    #    - config_dir
+    #    - target
+    # Args:
+    #    - None.
+    # Returns:
+    #    - None.
+    ############################################################################
     echo "Removing doily binary."
     rm "${binary_dir}/doily"
     if [[ "${target}" == "system" ]]; then
@@ -122,6 +161,17 @@ EOF
 }
 
 main() {
+    ############################################################################
+    # Parses arguments and responds appropriately.
+    # Globals:
+    #    - binary_dir (sets)
+    #    - config_dir (sets)
+    #    - target (sets)
+    # Args:
+    #    - Command-line arguments should be passed in with "$@".
+    # Returns:
+    #    - None.
+    ############################################################################
     args=$(getopt -o urh -l user,remove,help -- "$@") || exit 1
     eval set -- "$args"
 
@@ -168,4 +218,4 @@ EOF
     fi
 }
 
-main $@
+main "$@"
