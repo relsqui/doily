@@ -24,7 +24,7 @@
 ## Update Documentation
 
 * [ ] Document any interface changes (for major versions).
-* [ ] Mark new, deprecated, and other feature types in changelog.
+* [ ] Check commit history for anything missed in changelog.
 * [ ] Review inline configuration documentation.
 * [ ] Review README.
 * [ ] Review --help text in main script.

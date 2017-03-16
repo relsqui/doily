@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## Unreleased
+## [0.1.1] - 2017-03-16
 ### Added
 
 * Commands. Use `doily help` to see the list and their descriptions.
@@ -14,7 +14,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 * Updated documentation to include uninstallation.
+* Updated documentation to include commands.
 * Updated release checklist.
+
+### Fixed
+
+* Create user config directory if needed.
 
 
 ## [0.1.0] - 2017-03-03
