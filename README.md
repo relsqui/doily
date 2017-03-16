@@ -51,13 +51,14 @@ rm install.sh
 
 ## Configuration
 
-Your personal configuration file lives in `.config/doily/doily.conf`, and is
-full of comments explaining what it does. If you want to read all the settings
-and an explanation of them before downloading or running Doily, you can look
-at [the default configuration](default.conf).
+The default configuration keeps all your dailies private, doesn't use git, and
+uses your existing default editor and a sensible storage location. You can
+change these things by running `doily config`. If you want to read all the
+settings and an explanation of them before downloading or running Doily, you
+can look at [the default configuration](default.conf).
 
 In a systemwide installation, the default configuration file which is given to
-new Doily users is in `/usr/local/etc/doily/default.conf`.
+new Doily users lives in `/usr/local/etc/doily/default.conf`.
 
 
 ## Usage
@@ -77,6 +78,16 @@ you're writing on), you'll be editing the same file for that day. If the
 day rolls over while you're writing, whatever file you're currently in will
 still be saved under the previous day.
 
+### Commands
+
+In addition to the default `write` action, Doily comes with a number of other
+commands, which you can add right after the command (like `doily config`).
+
+* `config` opens your configuration file to view or change settings.
+* `read [date]` views your past writing in a pager.
+* `search [pattern] [date]` searches a past writing for a regex.
+* `version` prints your Doily version.
+* And, of course, `help` shows you the list of commands and descriptions.
 
 ## Uninstalling
 
