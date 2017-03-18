@@ -93,9 +93,8 @@ Commands:
                      The date "last" is also a special case interpreted as "the
                      most recent entry, whenever it was," which is the default.
     search [p] [d] - Search for a [p]attern (an extended regex) in the
-                     specified [d]ay. The default pattern is empty. The
-                     default day is the most recent one which has an entry;
-                     days can otherwise be specified like above.
+                     specified [d]ay. The default pattern is empty. Days can be
+                     specified as for reading; the default is all entries.
     version        - Print the installed version number of Doily.
     write          - Open today's file for writing. This is the default command
                      if no other one is specified.
@@ -113,11 +112,14 @@ EOF
         ;;
     search)
         if [[ -z "$3" ]]; then
+            egrep "$2" "${doily_dir}"/*
+            exit 0
+        fi
+        if [[ "$3" == "last" ]]; then
             lastfile="$(ls ${doily_dir} | tail -n 1)"
         else
             lastfile=$(date +%F --date="$3")
         fi
-        echo "$lastfile"
         egrep "$2" "${doily_dir}/${lastfile}"
         exit 0
         ;;
