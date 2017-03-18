@@ -1,0 +1,16 @@
+    ############################################################################
+    # Paste this as the first thing in the definition of a new function. Args
+    # and Returns are required; the others are optional.
+    #
+    # Globals:
+    #    - variable_name
+    #    - etc.
+    # Config Vars:
+    #    - 
+    # Environment:
+    #    - 
+    # Args:
+    #    - 
+    # Returns:
+    #    - 
+    ############################################################################
