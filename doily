@@ -13,7 +13,7 @@ VERSION="0.1.2"
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
-DEFAULT_CONF="/usr/local/etc/doily/default.conf"
+DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
 
 read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
 
@@ -40,7 +40,7 @@ check_config() {
 
 Couldn't find a configuration file for you!
 No personal configuration in ${CONF_FILE}
-No default configuration in /usr/local/etc/doily/default.conf
+No default configuration in ${DEFAULT_CONF}
 
 This isn't supposed to happen. Please check http://github.com/relsqui/doily
 for an example configuration file, then put it in:
