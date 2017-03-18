@@ -5,7 +5,7 @@ load helpers
 setup() {
     # This will be the parent directory for the config file.
     XDG_CONFIG_HOME="${BATS_TMPDIR}/config_home"
-    DOILY_TEST_ETC="${BATS_TEMPDIR}/etc"
+    DOILY_TEST_ETC="${BATS_TMPDIR}/etc"
     personal_config="${XDG_CONFIG_HOME}/doily/doily.conf"
     global_config="${DOILY_TEST_ETC}/doily/default.conf"
     source "${BATS_TEST_DIRNAME}"/../doily
@@ -28,4 +28,8 @@ setup() {
 
 @test "no default config" {
     assertFails check_config
+}
+
+teardown() {
+    rm -rf "${XDG_CONFIG_HOME}" "${DOILY_TEST_ETC}"
 }
