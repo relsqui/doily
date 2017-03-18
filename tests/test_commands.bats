@@ -6,10 +6,6 @@ setup() {
     source "${BATS_TEST_DIRNAME}"/../doily
 }
 
-teardown() {
-    rm -rf "${DOILY_TMP}"
-}
-
 @test "config command" {
     EDITOR=touch
     assertFails ls "${personal_config}"
@@ -31,6 +27,10 @@ teardown() {
         command_read "${date}"
         ls "${doily_dir}/${date}"
     done
+
+    export DOILY_TMP_BIN="${DOILY_TMP}/tmp_bin"
+    mkdir -p "${DOILY_TMP_BIN}"
+    export PATH="${DOILY_TMP_BIN}:${PATH}"
 
     assertFails test -s "${doily_dir}/1985-12-05"
     echo "echo 'hi' > \$1" > "${DOILY_TMP_BIN}/doily_update"

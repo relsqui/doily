@@ -72,11 +72,3 @@ setup() {
     ls "${doily_dir}/foo"
     ls "${PERSONAL_CONFIG}"
 }
-
-teardown() {
-    (rm -f "${DOILY_TEST_BIN}/doily"
-     rm -rf "${DEFAULT_CONFIG_DIR}"
-     rm -f "${HOME}/bin/doily"
-     rm -rf "${PERSONAL_CONFIG_DIR}"
-     rm -rf "${HOME}/.local/share/doily") || true
-}

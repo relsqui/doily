@@ -6,10 +6,6 @@ setup() {
     source "${BATS_TEST_DIRNAME}"/../doily
 }
 
-teardown() {
-    rm -rf "${DOILY_TMP}"
-}
-
 @test "config exists" {
     mkdir -p "${PERSONAL_CONFIG_DIR}"
     touch "${PERSONAL_CONFIG}"
