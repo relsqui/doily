@@ -1,10 +1,10 @@
 #!/usr/bin/env bats
 
 load helpers
+XDG_CONFIG_HOME="${BATS_TMPDIR}/home"
 
 setup() {
     # This will be the parent directory for the config file.
-    XDG_CONFIG_HOME="${BATS_TMPDIR}/home"
     source "${BATS_TEST_DIRNAME}"/../doily
 }
 
