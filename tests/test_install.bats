@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 if [ -z "$CI" ]; then
-    echo "Testing the install script outside of CI is destructively unsafe."
+    echo "Testing the install script outside of CI is destructively unsafe." >&2
     exit 0
 fi
 

@@ -92,6 +92,15 @@ commands, which you can add right after the command (like `doily config`).
 * `version` prints your Doily version.
 * And, of course, `help` shows you the list of commands and descriptions.
 
+## Tests
+
+Doily is tested with [Bats](https://github.com/sstephenson/bats), the Bash
+Automated Testing System. Your distribution's packaging system may provide
+it; if not, follow the install directions in the repository. Once you have
+Bats, you can run the tests with:
+
+`bats tests`
+
 ## Uninstalling
 
 Doily is self-removing with its install script. If you don't still have it,
