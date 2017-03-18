@@ -7,7 +7,7 @@ before_install:
     - cd bats
     - sudo ./install.sh /usr/local
     - cd -
-install:
     # This fixes a known bug in Bats (https://github.com/sstephenson/bats/issues/140#issuecomment-206756745)
     - bash tests/fix_bats.sh
+install: true
 script: bats tests
