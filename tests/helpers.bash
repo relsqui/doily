@@ -21,9 +21,9 @@ export PERSONAL_CONFIG="${HOME}/.config/doily/doily.conf"
 export DEFAULT_CONFIG="${DOILY_TEST_ETC}/doily/default.conf"
 
 # For tests which need to create auxiliary scripts.
-export BATS_TMP_BIN="${DOILY_TMP}/tmp_bin"
-mkdir -p "${BATS_TMP_BIN}"
-export PATH="${BATS_TMP_BIN}:${PATH}"
+export DOILY_TMP_BIN="${DOILY_TMP}/tmp_bin"
+mkdir -p "${DOILY_TMP_BIN}"
+export PATH="${DOILY_TMP_BIN}:${PATH}"
 
 export SAMPLE_CONF="${DOILY_TMP}/default.conf"
 cat > "${SAMPLE_CONF}" <<EOF

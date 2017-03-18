@@ -33,14 +33,14 @@ teardown() {
     done
 
     assertFails test -s "${doily_dir}/1985-12-05"
-    echo "echo 'hi' > \$1" > "${BATS_TMP_BIN}/doily_update"
-    chmod +x "${BATS_TMP_BIN}/doily_update"
+    echo "echo 'hi' > \$1" > "${DOILY_TMP_BIN}/doily_update"
+    chmod +x "${DOILY_TMP_BIN}/doily_update"
     PAGER=doily_update
 
     command_read last
     test "$(cat ${doily_dir}/1985-12-05)" == "hi"
 
-    echo "echo 'bye' > \$1" > "${BATS_TMP_BIN}/doily_update"
+    echo "echo 'bye' > \$1" > "${DOILY_TMP_BIN}/doily_update"
     command_read
     test "$(cat ${doily_dir}/1985-12-05)" == "bye"
 }
