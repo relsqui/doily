@@ -20,8 +20,8 @@ BRANCH="master"
 # Defaults, may be modified by options.
 target="system"
 action="install"
-binary_dir="/usr/local/bin"
-config_dir="/usr/local/etc/doily"
+binary_dir="${DOILY_TEST_BIN:-/usr/local/bin}"
+config_dir="${DOILY_TEST_ETC:-/usr/local/etc}/doily"
 
 error_out() {
     ############################################################################

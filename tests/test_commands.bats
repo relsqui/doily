@@ -6,6 +6,10 @@ setup() {
     source "${BATS_TEST_DIRNAME}"/../doily
 }
 
+teardown() {
+    rm -rf "${DOILY_TMP}"
+}
+
 @test "config command" {
     EDITOR=touch
     assertFails ls "${personal_config}"

@@ -4,20 +4,30 @@ assertFails() {
 }
 
 # We use temp space for a lot of things.
-DOILY_TMP="${BATS_TMPDIR}/doily"
+export DOILY_TMP="${BATS_TMPDIR}/doily"
 
 # This will be the parent directory for personal config.
-XDG_CONFIG_HOME="${DOILY_TMP}/config_home"
+export XDG_CONFIG_HOME="${DOILY_TMP}/.config"
 
 # Systemwide locations for the binary and default config.
-DOILY_TEST_BIN="${DOILY_TMP}/bin"
-DOILY_TEST_ETC="${DOILY_TMP}/etc"
+export DOILY_TEST_ETC="${DOILY_TMP}/etc"
+export DOILY_TEST_BIN="${DOILY_TMP}/bin"
+export PATH="${DOILY_TEST_BIN}:${PATH}"
 
 # Convenience shortcuts.
-personal_config="${XDG_CONFIG_HOME}/doily/doily.conf"
-global_config="${DOILY_TEST_ETC}/doily/default.conf"
+export personal_config="${XDG_CONFIG_HOME}/doily/doily.conf"
+export global_config="${DOILY_TEST_ETC}/doily/default.conf"
 
 # For tests which need to create auxiliary scripts.
-testbin="${DOILY_TMP}/testbin"
+export testbin="${DOILY_TMP}/testbin"
 mkdir -p "${testbin}"
-PATH="${testbin}:${PATH}"
+export PATH="${testbin}:${PATH}"
+
+export SAMPLE_CONF="${DOILY_TMP}/default.conf"
+cat > "${SAMPLE_CONF}" <<EOF
+public_dailies=
+doily_group=
+use_git=
+auto_commit=y
+doily_dir="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
+EOF

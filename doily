@@ -79,7 +79,8 @@ check_storage() {
     fi
     if [[ "${doily_dir}" -ef "${HOME}" ]]; then
         echo "Your Doily directory is set to your home directory, which is"\
-             "unsafe. Please change it by running \`doily config\`." 1>&2
+             "unsafe. Please change it by running \`doily config\`."\
+             "${doily_dir} == ${HOME}" 1>&2
         return "${ESTORAGE}"
     fi
     if [[ ! -d "${doily_dir}" ]]; then
