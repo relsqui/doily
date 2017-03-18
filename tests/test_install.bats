@@ -68,11 +68,3 @@ fi
     sudo bash install.sh --remove
     ls "${HOME}/.local/share/doily/dailies/$(date +%F)"
 }
-
-teardown() {
-    (sudo rm -f /usr/local/bin/doily
-     sudo rm -rf /usr/local/etc/doily
-     rm -f "${HOME}/bin/doily"
-     rm -rf "${HOME}/.config/doily"
-     rm -rf "${HOME}/.local/share/doily") || true
-}

@@ -37,7 +37,9 @@ check_config() {
     else
         cat <<EOF
 
-Couldn't find a default configuration file for you!
+Couldn't find a configuration file for you!
+No personal configuration in ${CONF_FILE}
+No default configuration in /usr/local/etc/doily/default.conf
 
 This isn't supposed to happen. Please check http://github.com/relsqui/doily
 for an example configuration file, then put it in:
