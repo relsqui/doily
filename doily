@@ -14,6 +14,8 @@ VERSION="0.1.2"
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
 
+read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
+
 check_config() {
     if [[ ! -e "${CONF_FILE}" ]]; then
         if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
@@ -31,7 +33,7 @@ for an example configuration file, then put it in:
 ${CONF_FILE}
 
 EOF
-            exit 1
+            return "${ECONFIG}"
         fi
     fi
 }
@@ -40,18 +42,19 @@ check_storage() {
     if [[ -z "${doily_dir}" ]]; then
         echo "No storage location set for Doily!"\
              "Please set one by running \`doily config\`." 1>&2
-        exit 1
+        return "${ESTORAGE}"
     elif [[ "${doily_dir}" != /* ]]; then
         # If it starts with ~, the shell will expand it before it gets here.
         echo "Your Doily directory is set to a relative path, which is"\
              "unsafe. Please change it by running \`doily config\`." 1>&2
-        exit 1
+        return "${ESTORAGE}"
     elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
         echo "Your Doily directory is set to your home directory, which is"\
              "unsafe. Please change it by running \`doily config\`." 1>&2
-        exit 1
+        return "${ESTORAGE}"
     elif [[ ! -d "${doily_dir}" ]]; then
         mkdir -p "${doily_dir}"
+        return $?
     fi
 }
 
@@ -96,9 +99,9 @@ command_read() {
 command_search() {
     if [[ -z "$2" ]]; then
         egrep "$1" "${doily_dir}"/*
-        exit 0
+        return
     fi
-    if [[ "$1" == "last" ]]; then
+    if [[ "$2" == "last" ]]; then
         lastfile="$(ls ${doily_dir} | tail -n 1)"
     else
         lastfile=$(date +%F --date="$2")
@@ -155,12 +158,13 @@ command_write() {
     fi
 }
 
-parse_command() {
+run_command() {
     doily_command="$1"
     if [[ -z "${doily_command}" ]]; then
         doily_command="write"
     fi
-    shift || :
+    # This returns failure if the args are empty, which is actually OK.
+    shift || true
     case "${doily_command}" in
         config) command_config ;;
         help) command_help ;;
@@ -170,16 +174,16 @@ parse_command() {
         write) command_write ;;
         *)
             echo "Use \`doily help\` to see help and other commands."
-            exit 1
+            return "${ECOMMAND}"
             ;;
     esac
 }
 
 main() {
-    check_config
+    check_config || return $?
     source "${CONF_FILE}"
-    check_storage
-    parse_command "$@"
+    check_storage || return $?
+    run_command "$@" || return $?
 }
 
 main "$@"
