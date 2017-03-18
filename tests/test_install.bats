@@ -1,14 +1,11 @@
 #!/usr/bin/env bats
 
-if [ -z "$CI" ]; then
-    echo "Testing the install script outside of CI is destructively unsafe." >&2
-    exit 0
-fi
+load helpers
 
-assertFails() {
-    run "$@" >&2
-    test "${status}" -ne 0
-}
+if [ -z "$CI" ]; then
+    echo "Skipping potentially-destructive install tests outside of CI." >&2
+    exit
+fi
 
 @test "system file creation" {
     sudo bash install.sh
