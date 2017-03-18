@@ -9,7 +9,7 @@ setup() {
 }
 
 @test "config exists" {
-    mkdir -p "${XDG_CONFIG_HOME}"
-    touch "${XDG_CONFIG_HOME}/doily.conf"
+    mkdir -p "${XDG_CONFIG_HOME}/doily"
+    touch "${XDG_CONFIG_HOME}/doily/doily.conf"
     check_config
 }

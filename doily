@@ -13,6 +13,7 @@ VERSION="0.1.2"
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
+DEFAULT_CONF="/usr/local/etc/doily/default.conf"
 
 read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
 
@@ -31,9 +32,9 @@ check_config() {
     if [[ -e "${CONF_FILE}" ]]; then
         return
     fi
-    if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
+    if [[ -e "${DEFAULT_CONF}" ]]; then
         mkdir -p "${CONF_DIR}"
-        cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+        cp "${DEFAULT_CONF}" "${CONF_FILE}"
     else
         cat <<EOF
 
