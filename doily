@@ -14,16 +14,14 @@ VERSION="0.1.2"
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
 
-
-if [[ -e "${CONF_FILE}" ]]; then
-    source "${CONF_FILE}"
-else
-    if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
-        mkdir -p "${CONF_DIR}"
-        cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
-        source "${CONF_FILE}"
-    else
-        cat <<EOF
+check_config() {
+    if [[ ! -e "${CONF_FILE}" ]]; then
+        if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
+            mkdir -p "${CONF_DIR}"
+            cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+            source "${CONF_FILE}"
+        else
+            cat <<EOF
 
 Couldn't find a default configuration file for you!
 
@@ -33,52 +31,36 @@ for an example configuration file, then put it in:
 ${CONF_FILE}
 
 EOF
-        exit 1
+            exit 1
+        fi
     fi
-fi
+}
 
-if [[ -n "$public_dailies" ]]; then
-    file_perms=644
-    dir_perms=755
-    doily_group="$USER"
-elif [[ -n "$doily_group" ]]; then
-    file_perms=640
-    dir_perms=750
-else
-    file_perms=600
-    dir_perms=700
-    doily_group="$USER"
-fi
+check_storage() {
+    if [[ -z "${doily_dir}" ]]; then
+        echo "No storage location set for Doily!"\
+             "Please set one by running \`doily config\`." 1>&2
+        exit 1
+    elif [[ "${doily_dir}" != /* ]]; then
+        # If it starts with ~, the shell will expand it before it gets here.
+        echo "Your Doily directory is set to a relative path, which is"\
+             "unsafe. Please change it by running \`doily config\`." 1>&2
+        exit 1
+    elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
+        echo "Your Doily directory is set to your home directory, which is"\
+             "unsafe. Please change it by running \`doily config\`." 1>&2
+        exit 1
+    elif [[ ! -d "${doily_dir}" ]]; then
+        mkdir -p "${doily_dir}"
+    fi
+}
 
-if [[ -z "${doily_dir}" ]]; then
-    echo "No storage location set for Doily!"\
-         "Please set one by running \`doily config\`." 1>&2
-    exit 1
-elif [[ "${doily_dir}" != /* ]]; then
-    # If it starts with ~, the shell will expand it before it gets here.
-    echo "Your Doily directory is set to a relative path, which is"\
-         "unsafe. Please change it by running \`doily config\`." 1>&2
-    exit 1
-elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
-    echo "Your Doily directory is set to your home directory, which is"\
-         "unsafe. Please change it by running \`doily config\`." 1>&2
-    exit 1
-elif [[ ! -d "${doily_dir}" ]]; then
-    mkdir -p "${doily_dir}"
-fi
+command_config() {
+    "${EDITOR:-nano}" "${CONF_FILE}"
+}
 
-doily_command="$1"
-if [[ -z "${doily_command}" ]]; then
-    doily_command="write"
-fi
-
-case "${doily_command}" in
-    config)
-        "${EDITOR:-nano}" "${CONF_FILE}"
-        exit 0
-        ;;
-    help)
-        cat <<EOF
+command_help() {
+    cat <<EOF
 Doily: a daily writing manager.
 https://github.com/relsqui/doily
 
@@ -99,68 +81,105 @@ Commands:
     write          - Open today's file for writing. This is the default command
                      if no other one is specified.
 EOF
-        exit 0
-        ;;
-    read)
-        if [[ "$2" == "last" || -z "$2" ]]; then
-            target="$(ls ${doily_dir} | tail -n 1)"
-        else
-            target=$(date +%F --date="$2")
-        fi
-        "${PAGER:-less}" "${doily_dir}/${target}"
-        exit 0
-        ;;
-    search)
-        if [[ -z "$3" ]]; then
-            egrep "$2" "${doily_dir}"/*
-            exit 0
-        fi
-        if [[ "$3" == "last" ]]; then
-            lastfile="$(ls ${doily_dir} | tail -n 1)"
-        else
-            lastfile=$(date +%F --date="$3")
-        fi
-        egrep "$2" "${doily_dir}/${lastfile}"
-        exit 0
-        ;;
-    version)
-        echo "doily v${VERSION}"
-        exit 0
-        ;;
-    write)
-        # Default to nano if the preferred editor is empty.
-        "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
-        ;;
-    *)
-        echo "Use \`doily help\` to see help and other commands."
-        exit 1
-        ;;
-esac
+}
 
-# Set permissions on everything, in case the config has changed.
-# (If you were wondering why the config file says not to use your home
-# directory as your Doily directory, this is why.)
-chmod "$dir_perms" "${doily_dir}"
-chgrp "$doily_group" "${doily_dir}"
-
-if ! find "${doily_dir}" -maxdepth 0 -empty; then
-    # These will error out if the directory is empty (for example if the text
-    # editor was closed without saving), so we check first.
-    # The method is taken from: http://stackoverflow.com/a/91769
-    chmod "$file_perms" "${doily_dir}/*"
-    chgrp "$doily_group" "${doily_dir}/*"
-fi
-
-if [[ -n "${use_git}" ]]; then
-    # This will usually be excessive but harmless; if use_git is newly turned
-    # on, though, it ensures the repo gets created and finds old dailies.
-    git -C "${doily_dir}" init
-    git -C "${doily_dir}" add "${doily_dir}"
-    # The commit commands will return non-zero if we didn't commit anything,
-    # but that's okay, so add an extra true to keep set -e from exiting.
-    if [[ -n "${auto_commit}" ]]; then
-        git -C "${doily_dir}" commit -m "Automatic commit from Doily." || true
+command_read() {
+    if [[ "$1" == "last" || -z "$1" ]]; then
+        target="$(ls ${doily_dir} | tail -n 1)"
     else
-        git -C "${doily_dir}" commit || true
+        target=$(date +%F --date="$1")
     fi
-fi
+    "${PAGER:-less}" "${doily_dir}/${target}"
+
+}
+
+command_search() {
+    if [[ -z "$2" ]]; then
+        egrep "$1" "${doily_dir}"/*
+        exit 0
+    fi
+    if [[ "$1" == "last" ]]; then
+        lastfile="$(ls ${doily_dir} | tail -n 1)"
+    else
+        lastfile=$(date +%F --date="$2")
+    fi
+    egrep "$1" "${doily_dir}/${lastfile}"
+}
+
+command_version() {
+    echo "doily v${VERSION}"
+}
+
+command_write() {
+    "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
+
+    if [[ -n "$public_dailies" ]]; then
+        file_perms=644
+        dir_perms=755
+        doily_group="$USER"
+    elif [[ -n "$doily_group" ]]; then
+        file_perms=640
+        dir_perms=750
+    else
+        file_perms=600
+        dir_perms=700
+        doily_group="$USER"
+    fi
+
+    # Set permissions on everything, in case the config has changed.
+    # (If you were wondering why the config file says not to use your home
+    # directory as your Doily directory, this is why.)
+    chmod "$dir_perms" "${doily_dir}"
+    chgrp "$doily_group" "${doily_dir}"
+
+    if ! find "${doily_dir}" -maxdepth 0 -empty; then
+        # These will error out if the directory is empty (for example if the text
+        # editor was closed without saving), so we check first.
+        # The method is taken from: http://stackoverflow.com/a/91769
+        chmod "$file_perms" "${doily_dir}/*"
+        chgrp "$doily_group" "${doily_dir}/*"
+    fi
+
+    if [[ -n "${use_git}" ]]; then
+        # This will usually be excessive but harmless; if use_git is newly turned
+        # on, though, it ensures the repo gets created and finds old dailies.
+        git -C "${doily_dir}" init
+        git -C "${doily_dir}" add "${doily_dir}"
+        # The commit commands will return non-zero if we didn't commit anything,
+        # but that's okay, so add an extra true to keep set -e from exiting.
+        if [[ -n "${auto_commit}" ]]; then
+            git -C "${doily_dir}" commit -m "Automatic commit from Doily." || true
+        else
+            git -C "${doily_dir}" commit || true
+        fi
+    fi
+}
+
+parse_command() {
+    doily_command="$1"
+    if [[ -z "${doily_command}" ]]; then
+        doily_command="write"
+    fi
+    shift || :
+    case "${doily_command}" in
+        config) command_config ;;
+        help) command_help ;;
+        read) command_read "$@" ;;
+        search) command_search "$@" ;;
+        version) command_version ;;
+        write) command_write ;;
+        *)
+            echo "Use \`doily help\` to see help and other commands."
+            exit 1
+            ;;
+    esac
+}
+
+main() {
+    check_config
+    source "${CONF_FILE}"
+    check_storage
+    parse_command "$@"
+}
+
+main "$@"
