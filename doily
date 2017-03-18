@@ -208,7 +208,8 @@ command_version() {
 
 command_write() {
     ############################################################################
-    # Opens today's daily file for writing.
+    # Opens today's daily file for writing. Sets user and group permissions
+    # and possibly adds files to git, depending on user configuration.
     #
     # Globals:
     #    - doily_dir
