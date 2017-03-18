@@ -3,12 +3,21 @@ assertFails() {
     test "${status}" -ne 0
 }
 
-# This will be the parent directory for the config file.
-XDG_CONFIG_HOME="${BATS_TMPDIR}/doily/config_home"
-DOILY_TEST_ETC="${BATS_TMPDIR}/doily/etc"
-DOILY_TEST_BIN="${BATS_TMPDIR}/doily/bin"
+# We use temp space for a lot of things.
+DOILY_TMP="${BATS_TMPDIR}/doily"
+
+# This will be the parent directory for personal config.
+XDG_CONFIG_HOME="${DOILY_TMP}/config_home"
+
+# Systemwide locations for the binary and default config.
+DOILY_TEST_BIN="${DOILY_TMP}/bin"
+DOILY_TEST_ETC="${DOILY_TMP}/etc"
+
+# Convenience shortcuts.
 personal_config="${XDG_CONFIG_HOME}/doily/doily.conf"
 global_config="${DOILY_TEST_ETC}/doily/default.conf"
-testbin="${BATS_TMPDIR}/doily/testbin"
+
+# For tests which need to create auxiliary scripts.
+testbin="${DOILY_TMP}/testbin"
 mkdir -p "${testbin}"
-PATH="${PATH}:${testbin}"
+PATH="${testbin}:${PATH}"

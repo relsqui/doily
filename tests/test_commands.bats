@@ -19,7 +19,7 @@ setup() {
 }
 
 @test "read command" {
-    doily_dir="${BATS_TMPDIR}/doily/dailies"
+    doily_dir="${DOILY_TMP}/dailies"
     mkdir -p "${doily_dir}"
     PAGER=touch
     for date in 1984-11-03 1985-12-05; do
@@ -39,4 +39,17 @@ setup() {
     echo "echo 'bye' > \$1" > "${testbin}/doily_update"
     command_read
     test "$(cat ${doily_dir}/1985-12-05)" == "bye"
+}
+
+@test "default command is write" {
+    EDITOR=touch
+    doily_dir="${DOILY_TMP}/dailies"
+    mkdir -p "${doily_dir}"
+    assertFails ls "${doily_dir}/$(date +%F)"
+    run_command
+    ls "${doily_dir}/$(date +%F)"
+}
+
+@test "nonexistant command" {
+    assertFails run_command not_a_command
 }

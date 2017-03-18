@@ -45,14 +45,14 @@ teardown() {
 }
 
 @test "create storage location" {
-    doily_dir="${BATS_TMPDIR}/doily/dailies"
+    doily_dir="${DOILY_TMP}/dailies"
     assertFails ls -d "${doily_dir}"
     check_storage
     ls -d "${doily_dir}"
 }
 
 @test "storage location is fine" {
-    doily_dir="${BATS_TMPDIR}/doily/dailies"
+    doily_dir="${DOILY_TMP}/dailies"
     mkdir -p "${doily_dir}"
     check_storage
 }
