@@ -17,13 +17,25 @@ CONF_FILE="${CONF_DIR}/doily.conf"
 read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
 
 check_config() {
-    if [[ ! -e "${CONF_FILE}" ]]; then
-        if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
-            mkdir -p "${CONF_DIR}"
-            cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
-            source "${CONF_FILE}"
-        else
-            cat <<EOF
+    ############################################################################
+    # Creates or verifies the existence of the configuration file.
+    #
+    # Globals:
+    #    - CONF_FILE
+    #    - CONF_DIR
+    # Args:
+    #    - None.
+    # Returns:
+    #    - ECONFIG if the file doesn't exist and can't be created.
+    ############################################################################
+    if [[ -e "${CONF_FILE}" ]]; then
+        return
+    fi
+    if [[ -e "/usr/local/etc/doily/default.conf" ]]; then
+        mkdir -p "${CONF_DIR}"
+        cp /usr/local/etc/doily/default.conf "${CONF_FILE}"
+    else
+        cat <<EOF
 
 Couldn't find a default configuration file for you!
 
@@ -33,36 +45,69 @@ for an example configuration file, then put it in:
 ${CONF_FILE}
 
 EOF
-            return "${ECONFIG}"
-        fi
+        return "${ECONFIG}"
     fi
 }
 
 check_storage() {
+    ############################################################################
+    # Does some safety checking on the daily file storage directory.
+    #
+    # Config Vars:
+    #    - doily_dir
+    # Environment:
+    #    - HOME
+    # Args:
+    #    - None.
+    # Returns:
+    #    - ESTORAGE if the directory is set inappropriately.
+    #    - The return value of `mkdir -p` if it needs to be created.
+    ############################################################################
     if [[ -z "${doily_dir}" ]]; then
         echo "No storage location set for Doily!"\
              "Please set one by running \`doily config\`." 1>&2
         return "${ESTORAGE}"
-    elif [[ "${doily_dir}" != /* ]]; then
+    fi
+    if [[ "${doily_dir}" != /* ]]; then
         # If it starts with ~, the shell will expand it before it gets here.
         echo "Your Doily directory is set to a relative path, which is"\
              "unsafe. Please change it by running \`doily config\`." 1>&2
         return "${ESTORAGE}"
-    elif [[ "${doily_dir}" -ef "${HOME}" ]]; then
+    fi
+    if [[ "${doily_dir}" -ef "${HOME}" ]]; then
         echo "Your Doily directory is set to your home directory, which is"\
              "unsafe. Please change it by running \`doily config\`." 1>&2
         return "${ESTORAGE}"
-    elif [[ ! -d "${doily_dir}" ]]; then
+    fi
+    if [[ ! -d "${doily_dir}" ]]; then
         mkdir -p "${doily_dir}"
         return $?
     fi
 }
 
 command_config() {
+    ############################################################################
+    # Opens the user's personal configuration file in their preferred editor.
+    #
+    # Globals:
+    #    - CONF_FILE
+    # Environment:
+    #    - EDITOR
+    # Args:
+    #    - None.
+    # Returns:
+    #    - None.
+    ############################################################################
     "${EDITOR:-nano}" "${CONF_FILE}"
 }
 
 command_help() {
+    ############################################################################
+    # Prints doily's help text.
+    #
+    # Args:
+    #    - None.
+    ############################################################################
     cat <<EOF
 Doily: a daily writing manager.
 https://github.com/relsqui/doily
@@ -87,16 +132,42 @@ EOF
 }
 
 command_read() {
+    ############################################################################
+    # Opens a daily file in the user's preferred pager.
+    #
+    # Config Vars:
+    #    - doily_dir
+    # Environment:
+    #    - PAGER
+    # Args:
+    #    - An identifier for the daily to be read. This should be either the
+    #      string "last" (meaning the most recent file) or a value which can
+    #      be interpreted by `date`. Defaults to "last".
+    # Returns:
+    #    - None.
+    ############################################################################
     if [[ "$1" == "last" || -z "$1" ]]; then
         target="$(ls ${doily_dir} | tail -n 1)"
     else
         target=$(date +%F --date="$1")
     fi
     "${PAGER:-less}" "${doily_dir}/${target}"
-
 }
 
 command_search() {
+    ############################################################################
+    # Search past daily files for a regular expression.
+    #
+    # Config Vars:
+    #    - doily_dir
+    # Args:
+    #    - The pattern to search for (required but can be empty).
+    #    - An identifier for the daily to search. This should be either the
+    #      string "last" (meaning the most recent file) or a value which can
+    #      be interpreted by `date`. Defaults to searching all files.
+    # Returns:
+    #    - None.
+    ############################################################################
     if [[ -z "$2" ]]; then
         egrep "$1" "${doily_dir}"/*
         return
@@ -110,10 +181,33 @@ command_search() {
 }
 
 command_version() {
+    ############################################################################
+    # Prints the current Doily version number.
+    #
+    # Globals:
+    #    - VERSION
+    # Args:
+    #    - None.
+    ############################################################################
     echo "doily v${VERSION}"
 }
 
 command_write() {
+    ############################################################################
+    # Opens today's daily file for writing.
+    #
+    # Globals:
+    #    - doily_dir
+    #    - public_dailies
+    #    - doily_group
+    #    - use_git
+    #    - auto_commit
+    # Environment:
+    #    - EDITOR
+    #    - USER
+    # Args:
+    #    - None.
+    ############################################################################
     "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
 
     if [[ -n "$public_dailies" ]]; then
@@ -159,6 +253,15 @@ command_write() {
 }
 
 run_command() {
+    ############################################################################
+    # Runs the specified command with the arguments given.
+    #
+    # Args:
+    #    - The command to be run. Defaults to "write".
+    #    - Zero or more arguments to the supplied command.
+    # Returns:
+    #    - ECOMMAND if the requested command doesn't exist.
+    ############################################################################
     doily_command="$1"
     if [[ -z "${doily_command}" ]]; then
         doily_command="write"
