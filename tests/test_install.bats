@@ -18,52 +18,61 @@ setup() {
 }
 
 @test "system file creation" {
+    # Test that the installer creates system files for systemwide install.
     bash "${INSTALLER}"
     ls "${DOILY_TEST_BIN}/doily"
     ls "${DEFAULT_CONFIG}"
 }
 
 @test "system install file perms" {
+    # Test that the systemwide binary is executable and the config is not.
     bash "${INSTALLER}"
     test -x "${DOILY_TEST_BIN}/doily"
     test ! -x "${DEFAULT_CONFIG}"
 }
 
 @test "system install doesn't install user files" {
+    # Test that the systemwide install doesn't create files in userspace.
     bash "${INSTALLER}"
     assertFails ls "${HOME}/bin/doily"
     assertFails ls "${PERSONAL_CONFIG}"
 }
 
 @test "system install doesn't leave tempfiles" {
+    # Test that the systemwide install cleans up its tempfiles.
     bash "${INSTALLER}"
     assertFails ls "/tmp/doily-*"
 }
 
 @test "user install files exist" {
+    # Test that userspace install creates the appropriate files.
     bash "${INSTALLER}" --user
     ls "${HOME}/bin/doily"
     ls "${PERSONAL_CONFIG}"
 }
 
 @test "user install file perms" {
+    # Test that the userspace binary is executable and the config is not.
     bash "${INSTALLER}" --user
     test -x "${HOME}/bin/doily"
     test ! -x "${PERSONAL_CONFIG}"
 }
 
 @test "user install doesn't install system files" {
+    # Test that userspace install doesn't create system files.
     bash "${INSTALLER}" --user
     assertFails ls "${DOILY_TEST_BIN}/doily"
     assertFails ls "${DEFAULT_CONFIG}"
 }
 
 @test "user install doesn't leave tempfiles" {
+    # Test that userspace install cleans up its tempfiles.
     bash "${INSTALLER}" --user
     assertFails ls "/tmp/doily-*"
 }
 
 @test "systemwide uninstall removes files" {
+    # Test that systemwide uninstall removes the install locations.
     bash "${INSTALLER}"
     bash "${INSTALLER}" --remove
     assertFails ls "${DOILY_TEST_BIN}/doily"
@@ -71,6 +80,7 @@ setup() {
 }
 
 @test "systemwide uninstall leaves user files" {
+    # Test that systemwide uninstall doesn't remove userspace files.
     bash "${INSTALLER}"
     doily_dir="${HOME}/.local/share/doily/dailies"
     mkdir -p "${doily_dir}"

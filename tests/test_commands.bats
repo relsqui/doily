@@ -8,7 +8,7 @@
 # You are free to use, copy, modify, etc. this by the terms of the MIT license.
 # See included LICENSE.txt for details.
 #
-# This file is designed to be read by Bats.
+# This file is intended to be read by Bats.
 ################################################################################
 
 load helpers
@@ -18,6 +18,7 @@ setup() {
 }
 
 @test "config command" {
+    # Test that the config command edits the config.
     EDITOR=touch
     assertFails ls "${personal_config}"
     mkdir -p "${PERSONAL_CONFIG_DIR}"
@@ -26,10 +27,12 @@ setup() {
 }
 
 @test "help command" {
+    # Test that the help command succeeds.
     command_help
 }
 
 @test "read command" {
+    # Test read command argument parsing.
     doily_dir="${DOILY_TMP}/dailies"
     mkdir -p "${doily_dir}"
     PAGER=touch
@@ -57,6 +60,7 @@ setup() {
 }
 
 @test "default command is write" {
+    # Test that run_command chooses write when no command is specified.
     EDITOR=touch
     doily_dir="${DOILY_TMP}/dailies"
     mkdir -p "${doily_dir}"
@@ -66,5 +70,6 @@ setup() {
 }
 
 @test "nonexistant command" {
+    # Test that run_command fails when passed non-commands.
     assertFails run_command not_a_command
 }
