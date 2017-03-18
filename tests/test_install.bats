@@ -10,19 +10,19 @@ setup() {
 @test "system file creation" {
     bash "${INSTALLER}"
     ls "${DOILY_TEST_BIN}/doily"
-    ls "${DOILY_TEST_ETC}/doily/default.conf"
+    ls "${DEFAULT_CONFIG}"
 }
 
 @test "system install file perms" {
     bash "${INSTALLER}"
     test -x "${DOILY_TEST_BIN}/doily"
-    test ! -x "${DOILY_TEST_ETC}/doily/default.conf"
+    test ! -x "${DEFAULT_CONFIG}"
 }
 
 @test "system install doesn't install user files" {
     bash "${INSTALLER}"
     assertFails ls "${HOME}/bin/doily"
-    assertFails ls "${HOME}/.config/doily/doily.conf"
+    assertFails ls "${PERSONAL_CONFIG}"
 }
 
 @test "system install doesn't leave tempfiles" {
@@ -33,19 +33,19 @@ setup() {
 @test "user install files exist" {
     bash "${INSTALLER}" --user
     ls "${HOME}/bin/doily"
-    ls "${HOME}/.config/doily/doily.conf"
+    ls "${PERSONAL_CONFIG}"
 }
 
 @test "user install file perms" {
     bash "${INSTALLER}" --user
     test -x "${HOME}/bin/doily"
-    test ! -x "${HOME}/.config/doily/doily.conf"
+    test ! -x "${PERSONAL_CONFIG}"
 }
 
 @test "user install doesn't install system files" {
     bash "${INSTALLER}" --user
     assertFails ls "${DOILY_TEST_BIN}/doily"
-    assertFails ls "${DOILY_TEST_ETC}/doily/default.conf"
+    assertFails ls "${DEFAULT_CONFIG}"
 }
 
 @test "user install doesn't leave tempfiles" {
@@ -64,20 +64,20 @@ setup() {
     bash "${INSTALLER}"
     doily_dir="${HOME}/.local/share/doily/dailies"
     mkdir -p "${doily_dir}"
-    mkdir -p "${XDG_CONFIG_HOME}/doily"
+    mkdir -p "${PERSONAL_CONFIG_DIR}"
     touch "${doily_dir}/foo"
-    touch "${personal_config}"
+    touch "${PERSONAL_CONFIG}"
     ls "${doily_dir}/foo"
-    ls "${personal_config}"
+    ls "${PERSONAL_CONFIG}"
     bash "${INSTALLER}" --remove
     ls "${doily_dir}/foo"
-    ls "${personal_config}"
+    ls "${PERSONAL_CONFIG}"
 }
 
 teardown() {
     (rm -f "${DOILY_TEST_BIN}/doily"
-     rm -rf "${DOILY_TEST_ETC}/doily"
+     rm -rf "${DEFAULT_CONFIG_DIR}"
      rm -f "${HOME}/bin/doily"
-     rm -rf "${HOME}/.config/doily"
+     rm -rf "${PERSONAL_CONFIG_DIR}"
      rm -rf "${HOME}/.local/share/doily") || true
 }

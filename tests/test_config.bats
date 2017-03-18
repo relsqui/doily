@@ -7,22 +7,22 @@ setup() {
 }
 
 teardown() {
-    rm -rf "${BATS_TMPDIR}/doily"
+    rm -rf "${DOILY_TMP}"
 }
 
 @test "config exists" {
-    mkdir -p "${XDG_CONFIG_HOME}/doily"
-    touch "${personal_config}"
+    mkdir -p "${PERSONAL_CONFIG_DIR}"
+    touch "${PERSONAL_CONFIG}"
     check_config
 }
 
 @test "get default config" {
-    mkdir -p "${DOILY_TEST_ETC}/doily"
+    mkdir -p "${DEFAULT_CONFIG_DIR}"
     fake_config="Default configuration."
-    echo "${fake_config}" > "${global_config}"
-    assertFails test -s "${personal_config}"
+    echo "${fake_config}" > "${DEFAULT_CONFIG}"
+    assertFails test -s "${PERSONAL_CONFIG}"
     check_config
-    test "$(cat ${personal_config})" == "${fake_config}"
+    test "$(cat ${PERSONAL_CONFIG})" == "${fake_config}"
 }
 
 @test "no default config" {

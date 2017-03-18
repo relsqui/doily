@@ -8,7 +8,6 @@ export DOILY_TMP="${BATS_TMPDIR}/doily"
 
 # This will be the parent directory for personal config.
 export HOME="${DOILY_TMP}/home"
-export XDG_CONFIG_HOME="${DOILY_TMP}/home/.config"
 
 # Systemwide locations for the binary and default config.
 export DOILY_TEST_ETC="${DOILY_TMP}/etc"
@@ -16,13 +15,15 @@ export DOILY_TEST_BIN="${DOILY_TMP}/bin"
 export PATH="${DOILY_TEST_BIN}:${PATH}"
 
 # Convenience shortcuts.
-export personal_config="${XDG_CONFIG_HOME}/doily/doily.conf"
-export global_config="${DOILY_TEST_ETC}/doily/default.conf"
+export PERSONAL_CONFIG_DIR="${HOME}/.config/doily"
+export DEFAULT_CONFIG_DIR="${DOILY_TEST_ETC}/doily/"
+export PERSONAL_CONFIG="${HOME}/.config/doily/doily.conf"
+export DEFAULT_CONFIG="${DOILY_TEST_ETC}/doily/default.conf"
 
 # For tests which need to create auxiliary scripts.
-export testbin="${DOILY_TMP}/testbin"
-mkdir -p "${testbin}"
-export PATH="${testbin}:${PATH}"
+export BATS_TMP_BIN="${DOILY_TMP}/tmp_bin"
+mkdir -p "${BATS_TMP_BIN}"
+export PATH="${BATS_TMP_BIN}:${PATH}"
 
 export SAMPLE_CONF="${DOILY_TMP}/default.conf"
 cat > "${SAMPLE_CONF}" <<EOF
@@ -30,5 +31,5 @@ public_dailies=
 doily_group=
 use_git=
 auto_commit=y
-doily_dir="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
+doily_dir="\${XDG_DATA_HOME:-\$HOME/.local/share}/doily/dailies"
 EOF
