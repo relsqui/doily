@@ -119,10 +119,7 @@ bash tests/fix_bats.sh
 ```
 
 The helper script corrects a
-[known bug](https://github.com/sstephenson/bats/issues/140) in Bats. It assumes
-that Bats is installed under `/usr/local`, as the instructions for installing
-it from source recommend; if you installed from a packaging system, you may
-need to change the path at the end to `/usr/lib/bats/bats-exec-suite`.
+[known bug](https://github.com/sstephenson/bats/issues/140) in Bats.
 
 ## Uninstalling
 
