@@ -1,4 +1,5 @@
 assertFails() {
+    # Convenience function for verifying failure of a command.
     run "$@" >&2
     test "${status}" -ne 0
 }
@@ -6,8 +7,9 @@ assertFails() {
 # We use temp space for a lot of things.
 export DOILY_TMP="${BATS_TMPDIR}/doily"
 
-# This will be the parent directory for personal config.
+# Putting a homedir in our temp space makes it easier to clean up.
 export HOME="${DOILY_TMP}/home"
+mkdir -p "${HOME}"
 
 # Systemwide locations for the binary and default config.
 export DOILY_TEST_ETC="${DOILY_TMP}/etc"
@@ -24,12 +26,3 @@ export DEFAULT_CONFIG="${DOILY_TEST_ETC}/doily/default.conf"
 export DOILY_TMP_BIN="${DOILY_TMP}/tmp_bin"
 mkdir -p "${DOILY_TMP_BIN}"
 export PATH="${DOILY_TMP_BIN}:${PATH}"
-
-export SAMPLE_CONF="${DOILY_TMP}/default.conf"
-cat > "${SAMPLE_CONF}" <<EOF
-public_dailies=
-doily_group=
-use_git=
-auto_commit=y
-doily_dir="\${XDG_DATA_HOME:-\$HOME/.local/share}/doily/dailies"
-EOF

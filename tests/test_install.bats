@@ -3,7 +3,6 @@
 load helpers
 
 setup() {
-    mkdir -p "${HOME}"
     INSTALLER="${BATS_TEST_DIRNAME}/../install.sh"
 }
 

@@ -40,8 +40,8 @@ teardown() {
 }
 
 @test "homedir storage location" {
-    echo $HOME
     doily_dir="${HOME}"
+    assertFails check_storage
 }
 
 @test "create storage location" {
