@@ -7,7 +7,8 @@ assertFails() {
 export DOILY_TMP="${BATS_TMPDIR}/doily"
 
 # This will be the parent directory for personal config.
-export XDG_CONFIG_HOME="${DOILY_TMP}/.config"
+export HOME="${DOILY_TMP}/home"
+export XDG_CONFIG_HOME="${DOILY_TMP}/home/.config"
 
 # Systemwide locations for the binary and default config.
 export DOILY_TEST_ETC="${DOILY_TMP}/etc"

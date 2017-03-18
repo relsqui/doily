@@ -7,7 +7,6 @@ setup() {
 }
 
 teardown() {
-    cat ~/test_output
     rm -rf "${BATS_TMPDIR}/doily"
 }
 
@@ -43,7 +42,6 @@ teardown() {
 @test "homedir storage location" {
     echo $HOME
     doily_dir="${HOME}"
-    assertFails check_storage 2>~/test_output
 }
 
 @test "create storage location" {

@@ -1,10 +1,9 @@
 #!/usr/bin/env bats
 
+load helpers
+
 setup() {
-    load helpers
-    HOME="${DOILY_TMP}/home"
     mkdir -p "${HOME}"
-    XDG_CONFIG_HOME="${HOME}/.config"
     INSTALLER="${BATS_TEST_DIRNAME}/../install.sh"
 }
 
@@ -62,14 +61,17 @@ setup() {
 }
 
 @test "systemwide uninstall leaves user files" {
-    skip "this needs reworking and I'm too tired to do it right now"
     bash "${INSTALLER}"
-    export EDITOR=touch
-    cat "${SAMPLE_CONF}" > "${global_config}"
-    doily
-    ls "${HOME}/.local/share/doily/dailies/$(date +%F)"
+    doily_dir="${HOME}/.local/share/doily/dailies"
+    mkdir -p "${doily_dir}"
+    mkdir -p "${XDG_CONFIG_HOME}/doily"
+    touch "${doily_dir}/foo"
+    touch "${personal_config}"
+    ls "${doily_dir}/foo"
+    ls "${personal_config}"
     bash "${INSTALLER}" --remove
-    ls "${HOME}/.local/share/doily/dailies/$(date +%F)"
+    ls "${doily_dir}/foo"
+    ls "${personal_config}"
 }
 
 teardown() {
