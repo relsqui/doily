@@ -99,7 +99,26 @@ Automated Testing System. Your distribution's packaging system may provide
 it; if not, follow the install directions in the repository. Once you have
 Bats, you can run the tests with:
 
-`bats tests`
+```
+bats tests
+```
+
+If you get this error:
+
+```
+/usr/lib/bats/bats-exec-suite: line 20: let: count+=: syntax error: operand expected (error token is "+=")
+```
+
+Run this helper script to fix it:
+
+```
+bash tests/fix_bats.sh
+```
+
+The script corrects a
+[known bug](https://github.com/sstephenson/bats/issues/140) in Bats. It assumes
+that Bats is installed under /usr/local; change the path in the script if you
+installed it somewhere else.
 
 ## Uninstalling
 
