@@ -107,6 +107,8 @@ command_help() {
     #
     # Args:
     #    - None.
+    # Returns:
+    #    - None.
     ############################################################################
     cat <<EOF
 Doily: a daily writing manager.
@@ -188,6 +190,8 @@ command_version() {
     #    - VERSION
     # Args:
     #    - None.
+    # Returns:
+    #    - None.
     ############################################################################
     echo "doily v${VERSION}"
 }
@@ -206,6 +210,8 @@ command_write() {
     #    - EDITOR
     #    - USER
     # Args:
+    #    - None.
+    # Returns:
     #    - None.
     ############################################################################
     "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"

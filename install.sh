@@ -34,7 +34,7 @@ error_out() {
     # Args:
     #    - Line number of the error (provided by trap).
     # Returns:
-    #    - Nothing.
+    #    - None.
     ############################################################################
     echo
     echo "The doily install script exited with an error on line $1."
