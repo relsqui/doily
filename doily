@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# Doily v0.1.0
-# (c) 2017 Finn Ellis, free to use and modify under the MIT license.
-# Manage writing into daily files.
+################################################################################
+# Doily v0.1.2
 # https://github.com/relsqui/doily
+#
+# (c) 2017 Finn Ellis.
+# You are free to use, copy, modify, etc. this by the terms of the MIT license.
+# See included LICENSE.txt for details.
+#
+# A script for managing daily writing. See README.md or `doily help`.
+################################################################################
 
 set -e
 

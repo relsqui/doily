@@ -1,5 +1,16 @@
 #!/usr/bin/env bats
 
+################################################################################
+# Tests for the Doily install script.
+# https://github.com/relsqui/doily
+#
+# (c) 2017 Finn Ellis.
+# You are free to use, copy, modify, etc. this by the terms of the MIT license.
+# See included LICENSE.txt for details.
+#
+# This file is designed to be read by Bats.
+################################################################################
+
 load helpers
 
 setup() {

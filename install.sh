@@ -2,8 +2,11 @@
 
 ################################################################################
 # Doily install script.
-# (c) 2017 Finn Ellis, licensed under MIT.
 # https://github.com/relsqui/doily
+#
+# (c) 2017 Finn Ellis.
+# You are free to use, copy, modify, etc. this by the terms of the MIT license.
+# See included LICENSE.txt for details.
 #
 # Install a doily release from the Github repository, either systemwide
 # or for the current user; or, remove doily for the system or user.
