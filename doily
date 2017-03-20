@@ -86,10 +86,10 @@ command_read() {
     # Returns:
     #    - None.
     ############################################################################
-    if [[ "$1" == "last" || -z "$1" ]]; then
-        target="$(ls ${doily_dir} | tail -n 1)"
+    if [[ -z "$1" ]]; then
+        target="$(identify_dailyfile last)"
     else
-        target=$(date +%F --date="$1")
+        target="$(identify_dailyfile "$1")"
     fi
     "${PAGER:-less}" "${doily_dir}/${target}"
 }

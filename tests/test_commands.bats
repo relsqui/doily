@@ -54,28 +54,12 @@ setup() {
 
 @test "read command" {
     # Test read command argument parsing.
-    PAGER=touch
+    PAGER=cat
     for date in 1984-11-03 1985-12-05; do
-        assertFails ls "${doily_dir}/${date}"
-        command_read "${date}"
-        ls "${doily_dir}/${date}"
+        echo "${date}" > "${doily_dir}/${date}"
+        test "$(command_read "${date}")" == "${date}"
     done
-
-    export DOILY_TMP_BIN="${DOILY_TMP}/tmp_bin"
-    mkdir -p "${DOILY_TMP_BIN}"
-    export PATH="${DOILY_TMP_BIN}:${PATH}"
-
-    assertFails test -s "${doily_dir}/1985-12-05"
-    echo "echo 'hi' > \$1" > "${DOILY_TMP_BIN}/doily_update"
-    chmod +x "${DOILY_TMP_BIN}/doily_update"
-    PAGER=doily_update
-
-    command_read last
-    test "$(cat ${doily_dir}/1985-12-05)" == "hi"
-
-    echo "echo 'bye' > \$1" > "${DOILY_TMP_BIN}/doily_update"
-    command_read
-    test "$(cat ${doily_dir}/1985-12-05)" == "bye"
+    test "$(command_read)" == "1985-12-05"
 }
 
 @test "default command is write" {
