@@ -21,7 +21,7 @@ CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
 DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
 
-read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
+read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
 command_config() {
     ############################################################################
@@ -84,12 +84,16 @@ command_read() {
     #      string "last" (meaning the most recent file) or a value which can
     #      be interpreted by `date`. Defaults to "last".
     # Returns:
-    #    - None.
+    #    - EDATE if the daily couldn't be identified.
     ############################################################################
     if [[ -z "$1" ]]; then
         target="$(identify_dailyfile last)"
     else
         target="$(identify_dailyfile "$1")"
+    fi
+    if [[ -z "${target}" ]]; then
+        echo "Couldn't find a daily corresponding to that date."
+        return "$EDATE"
     fi
     "${PAGER:-less}" "${doily_dir}/${target}"
 }

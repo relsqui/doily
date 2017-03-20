@@ -60,6 +60,7 @@ setup() {
         test "$(command_read "${date}")" == "${date}"
     done
     test "$(command_read)" == "1985-12-05"
+    assertFails command_read "Some non-date."
 }
 
 @test "default command is write" {
