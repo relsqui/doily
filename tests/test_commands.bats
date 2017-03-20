@@ -53,7 +53,7 @@ setup() {
 }
 
 @test "read command" {
-    # Test read command argument parsing.
+    # Test that the read command affects the correct files.
     PAGER=cat
     for date in 1984-11-03 1985-12-05; do
         echo "${date}" > "${doily_dir}/${date}"
