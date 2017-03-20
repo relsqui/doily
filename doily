@@ -23,78 +23,6 @@ DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
 
 read ECONFIG ESTORAGE ECOMMAND <<< $(seq 3)
 
-check_config() {
-    ############################################################################
-    # Creates or verifies the existence of the configuration file.
-    #
-    # Globals:
-    #    - CONF_FILE
-    #    - CONF_DIR
-    # Args:
-    #    - None.
-    # Returns:
-    #    - ECONFIG if the file doesn't exist and can't be created.
-    ############################################################################
-    if [[ -e "${CONF_FILE}" ]]; then
-        return
-    fi
-    if [[ -e "${DEFAULT_CONF}" ]]; then
-        mkdir -p "${CONF_DIR}"
-        cp "${DEFAULT_CONF}" "${CONF_FILE}"
-    else
-        cat <<EOF
-
-Couldn't find a configuration file for you!
-No personal configuration in ${CONF_FILE}
-No default configuration in ${DEFAULT_CONF}
-
-This isn't supposed to happen. Please check http://github.com/relsqui/doily
-for an example configuration file, then put it in:
-
-${CONF_FILE}
-
-EOF
-        return "${ECONFIG}"
-    fi
-}
-
-check_storage() {
-    ############################################################################
-    # Does some safety checking on the daily file storage directory.
-    #
-    # Config Vars:
-    #    - doily_dir
-    # Environment:
-    #    - HOME
-    # Args:
-    #    - None.
-    # Returns:
-    #    - ESTORAGE if the directory is set inappropriately.
-    #    - The return value of `mkdir -p` if it needs to be created.
-    ############################################################################
-    if [[ -z "${doily_dir}" ]]; then
-        echo "No storage location set for Doily!"\
-             "Please set one by running \`doily config\`." 1>&2
-        return "${ESTORAGE}"
-    fi
-    if [[ "${doily_dir}" != /* ]]; then
-        # If it starts with ~, the shell will expand it before it gets here.
-        echo "Your Doily directory is set to a relative path, which is"\
-             "unsafe. Please change it by running \`doily config\`." 1>&2
-        return "${ESTORAGE}"
-    fi
-    if [[ "${doily_dir}" -ef "${HOME}" ]]; then
-        echo "Your Doily directory is set to your home directory, which is"\
-             "unsafe. Please change it by running \`doily config\`."\
-             "${doily_dir} == ${HOME}" 1>&2
-        return "${ESTORAGE}"
-    fi
-    if [[ ! -d "${doily_dir}" ]]; then
-        mkdir -p "${doily_dir}"
-        return $?
-    fi
-}
-
 command_config() {
     ############################################################################
     # Opens the user's personal configuration file in their preferred editor.
@@ -267,6 +195,117 @@ command_write() {
             git -C "${doily_dir}" commit || true
         fi
     fi
+}
+
+check_config() {
+    ############################################################################
+    # Creates or verifies the existence of the configuration file.
+    #
+    # Globals:
+    #    - CONF_FILE
+    #    - CONF_DIR
+    # Args:
+    #    - None.
+    # Returns:
+    #    - ECONFIG if the file doesn't exist and can't be created.
+    ############################################################################
+    if [[ -e "${CONF_FILE}" ]]; then
+        return
+    fi
+    if [[ -e "${DEFAULT_CONF}" ]]; then
+        mkdir -p "${CONF_DIR}"
+        cp "${DEFAULT_CONF}" "${CONF_FILE}"
+    else
+        cat <<EOF
+
+Couldn't find a configuration file for you!
+No personal configuration in ${CONF_FILE}
+No default configuration in ${DEFAULT_CONF}
+
+This isn't supposed to happen. Please check http://github.com/relsqui/doily
+for an example configuration file, then put it in:
+
+${CONF_FILE}
+
+EOF
+        return "${ECONFIG}"
+    fi
+}
+
+check_storage() {
+    ############################################################################
+    # Does some safety checking on the daily file storage directory.
+    #
+    # Config Vars:
+    #    - doily_dir
+    # Environment:
+    #    - HOME
+    # Args:
+    #    - None.
+    # Returns:
+    #    - ESTORAGE if the directory is set inappropriately.
+    #    - The return value of `mkdir -p` if it needs to be created.
+    ############################################################################
+    if [[ -z "${doily_dir}" ]]; then
+        echo "No storage location set for Doily!"\
+             "Please set one by running \`doily config\`." 1>&2
+        return "${ESTORAGE}"
+    fi
+    if [[ "${doily_dir}" != /* ]]; then
+        # If it starts with ~, the shell will expand it before it gets here.
+        echo "Your Doily directory is set to a relative path, which is"\
+             "unsafe. Please change it by running \`doily config\`." 1>&2
+        return "${ESTORAGE}"
+    fi
+    if [[ "${doily_dir}" -ef "${HOME}" ]]; then
+        echo "Your Doily directory is set to your home directory, which is"\
+             "unsafe. Please change it by running \`doily config\`."\
+             "${doily_dir} == ${HOME}" 1>&2
+        return "${ESTORAGE}"
+    fi
+    if [[ ! -d "${doily_dir}" ]]; then
+        mkdir -p "${doily_dir}"
+        return $?
+    fi
+}
+
+identify_dailyfile() {
+    ############################################################################
+    # Figure out which daily file a user is referring to, and return its
+    # filename. The identifier can be in any format `date` knows how to
+    # interpret, or the special case "last" to mean the most recent daily.
+    #
+    # Config Vars:
+    #    - doily_dir
+    # Args:
+    #    - A string which can be identified as a daily file, either "last" or
+    #      any format `date` can parse.
+    # Echoes:
+    #    - The filename of the appropriate daily file, if it exists, or an
+    #      empty string otherwise.
+    # Returns:
+    #    - None.
+    ############################################################################
+    if find "${doily_dir}" -maxdepth 0 -empty >/dev/null; then
+        # More than zero daily files exist.
+        if [[ "$1" == "last" ]]; then
+            # Echo the last (alphabetically) file in the directory, which
+            # is the most recent unless it's been manually altered.
+            echo "$(ls "${doily_dir}" | tail -n 1)"
+            return
+        else
+            filename="$(date +%F --date="$1")"
+            # Date will print nothing to stdin if it fails.
+            if [[ -n "${filename}" ]]; then
+                if [[ -e "${doily_dir}/${filename}" ]]; then
+                    echo "${filename}"
+                    return
+                fi
+            fi
+        fi
+    fi
+    # We couldn't find it or it didn't exist.
+    echo ""
 }
 
 run_command() {
