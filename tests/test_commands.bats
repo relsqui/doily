@@ -14,7 +14,23 @@
 load helpers
 
 setup() {
+    doily_dir="${DOILY_TMP}/dailies"
+    mkdir -p "${doily_dir}"
     source "${BATS_TEST_DIRNAME}"/../doily
+}
+
+@test "identify dailyfile" {
+    # Test various kinds of day input.
+    touch "${doily_dir}/2017-01-01"
+    touch "${doily_dir}/2017-01-02"
+    test "$(identify_dailyfile last)" == "2017-01-02"
+    touch "${doily_dir}/2017-01-03"
+    test "$(identify_dailyfile last)" == "2017-01-03"
+    test "$(identify_dailyfile "2017-01-01")" == "2017-01-01"
+    test "$(identify_dailyfile "January 2, 2017")" == "2017-01-02"
+    test "$(identify_dailyfile "")" == ""
+    test "$(identify_dailyfile "1985-12-05")" == ""
+    test "$(identify_dailyfile "This isn't a parseable date.")" == ""
 }
 
 @test "config command" {
@@ -26,6 +42,11 @@ setup() {
     ls "${PERSONAL_CONFIG}"
 }
 
+@test "version command" {
+    # Test that the version command succeeds.
+    command_version
+}
+
 @test "help command" {
     # Test that the help command succeeds.
     command_help
@@ -33,8 +54,6 @@ setup() {
 
 @test "read command" {
     # Test read command argument parsing.
-    doily_dir="${DOILY_TMP}/dailies"
-    mkdir -p "${doily_dir}"
     PAGER=touch
     for date in 1984-11-03 1985-12-05; do
         assertFails ls "${doily_dir}/${date}"
@@ -62,8 +81,6 @@ setup() {
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
-    doily_dir="${DOILY_TMP}/dailies"
-    mkdir -p "${doily_dir}"
     assertFails ls "${doily_dir}/$(date +%F)"
     run_command
     ls "${doily_dir}/$(date +%F)"
