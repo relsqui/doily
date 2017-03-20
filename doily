@@ -110,18 +110,18 @@ command_search() {
     #      string "last" (meaning the most recent file) or a value which can
     #      be interpreted by `date`. Defaults to searching all files.
     # Returns:
-    #    - None.
+    #    - EDATE if the daily couldn't be identified.
     ############################################################################
     if [[ -z "$2" ]]; then
         egrep "$1" "${doily_dir}"/*
         return
     fi
-    if [[ "$2" == "last" ]]; then
-        lastfile="$(ls ${doily_dir} | tail -n 1)"
-    else
-        lastfile=$(date +%F --date="$2")
+    target="$(identify_dailyfile "$2")"
+    if [[ -z "${target}" ]]; then
+        echo "Couldn't find a daily corresponding to that date."
+        return "$EDATE"
     fi
-    egrep "$1" "${doily_dir}/${lastfile}"
+    egrep "$1" "${doily_dir}/${target}"
 }
 
 command_version() {
