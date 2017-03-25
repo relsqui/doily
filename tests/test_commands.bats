@@ -63,6 +63,16 @@ setup() {
     assertFails command_read "Some non-date."
 }
 
+@test "search command default" {
+    # Test that the search command defaults to all daily files.
+    for file in 1 2 3; do
+        echo "foo" > "${doily_dir}/${file}"
+        echo "${doily_dir}/${file}:foo" >> "${DOILY_TMP}/expected"
+    done
+    command_search "foo" >> "${DOILY_TMP}/actual"
+    diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
+}
+
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
