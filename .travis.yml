@@ -12,4 +12,4 @@ before_install:
     - sudo usermod -aG doily_test $USER
 install: true
 # Run inside a subshell so the group membership kicks in.
-script: sudo -E su $USER -c bats tests
+script: sudo -E su $USER -c "bats tests"
