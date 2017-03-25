@@ -10,13 +10,15 @@
 ## In Progress
 
 * [ ] Update changelog contents.
-* [ ] Write tests for new features.
+* [x] Write tests for new features.
+* [ ] Write tests for new plugins.
 * [ ] Write migration code (as needed, for major versions).
+* [ ] Write migration tests (if there's migration code).
 
 ## Features Ready
 
 * [ ] Run shellcheck.
-* [ ] Run regression tests.
+* [x] Run regression tests.
 * [ ] Update plugins as needed.
 * [ ] Update version in plugins, iff successfully tested.
 * [ ] Remove (or incorporate) any debugging-only code.
