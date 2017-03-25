@@ -92,6 +92,13 @@ setup() {
     test "" == "$(command_search 'foo' 'December 6, 1985')"
 }
 
+@test "basic write command" {
+    EDITOR=touch
+    assertFails ls "${doily_dir}/$(date +%F)"
+    command_write
+    ls "${doily_dir}/$(date +%F)"
+}
+
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
