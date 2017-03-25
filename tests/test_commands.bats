@@ -137,6 +137,14 @@ setup() {
     assertDailyPerms 750 640 "doily_test"
 }
 
+@test "permission setting precedence" {
+    EDITOR=touch
+    public_dailies=y
+    doily_group=doily_test
+    command_write
+    assertDailyPerms 755 644 "${USER}"
+}
+
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
