@@ -80,6 +80,18 @@ setup() {
     diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
 }
 
+@test "search command bad date" {
+    assertFails command_search "foo" "not a date"
+}
+
+@test "search command specific dates" {
+    echo "foo" > "${doily_dir}/1985-12-05"
+    test "foo" == "$(command_search 'foo' 'December 5, 1985')"
+    assertFails command_search 'foo' 'December 6, 1985'
+    touch "${doily_dir}/1985-12-06"
+    test "" == "$(command_search 'foo' 'December 6, 1985')"
+}
+
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
