@@ -26,9 +26,9 @@ setup() {
 
 @test "get default config" {
     # Test that check_config gets the default config when needed.
-    mkdir -p "${DEFAULT_CONFIG_DIR}"
     fake_config="Default configuration."
-    echo "${fake_config}" > "${DEFAULT_CONFIG}"
+    sudo mkdir -p "${DEFAULT_CONFIG_DIR}"
+    sudo bash -c "echo \"${fake_config}\" > \"${DEFAULT_CONFIG}\""
     assertFails test -s "${PERSONAL_CONFIG}"
     check_config
     test "$(cat ${PERSONAL_CONFIG})" == "${fake_config}"

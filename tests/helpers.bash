@@ -18,7 +18,7 @@ assertFails() {
 
 teardown() {
     # Remove files in the test workspace between tests.
-    rm -rf "${DOILY_TMP}"
+    sudo rm -rf "${DOILY_TMP}"
 }
 
 # Define a temporary workspace for files generated in tests.
@@ -32,6 +32,7 @@ mkdir -p "${HOME}"
 export DOILY_TEST_ETC="${DOILY_TMP}/etc"
 export DOILY_TEST_BIN="${DOILY_TMP}/bin"
 export PATH="${DOILY_TEST_BIN}:${PATH}"
+sudo mkdir -p "${DOILY_TEST_ETC}" "${DOILY_TEST_BIN}"
 
 # Convenience shortcuts.
 export PERSONAL_CONFIG_DIR="${HOME}/.config/doily"
