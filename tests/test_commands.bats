@@ -13,6 +13,10 @@
 
 load helpers
 
+assertPerms() {
+    test "$(stat -c %a "$1")" == "$2"
+}
+
 setup() {
     doily_dir="${DOILY_TMP}/dailies"
     mkdir -p "${doily_dir}"
@@ -97,6 +101,45 @@ setup() {
     assertFails ls "${doily_dir}/$(date +%F)"
     command_write
     ls "${doily_dir}/$(date +%F)"
+}
+
+@test "write sets permissions" {
+    EDITOR=touch
+
+    command_write
+    assertPerms "${doily_dir}" 700
+    for file in $(ls "${doily_dir}"); do
+        ls -l "${doily_dir}"
+        assertPerms "${doily_dir}/${file}" 600
+    done
+
+    public_dailies=y
+    command_write
+    assertPerms "${doily_dir}" 755
+    for file in $(ls "${doily_dir}"); do
+        assertPerms "${doily_dir}/${file}" 644
+    done
+
+    public_dailies=
+    doily_group=
+    command_write
+    assertPerms "${doily_dir}" 700
+    for file in $(ls "${doily_dir}"); do
+        assertPerms "${doily_dir}/${file}" 600
+    done
+}
+
+@test "write group permissions" {
+    # Group permissions are weird so they get their own test.
+    groups | grep -qw doily_test || skip "can't do group test; not in group"
+    EDITOR=touch
+    public_dailies=
+    doily_group=doily_test
+    command_write
+    assertPerms "${doily_dir}" 750
+    for file in $(ls "${doily_dir}"); do
+        assertPerms "${doily_dir}/${file}" 640
+    done
 }
 
 @test "default command is write" {

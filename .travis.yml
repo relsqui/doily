@@ -7,5 +7,9 @@ before_install:
     - cd bats
     - sudo ./install.sh /usr/local
     - cd -
+    # Add ourselves to a test group for permissions tests.
+    - sudo addgroup doily_test
+    - sudo usermod -aG doily_test $USER
 install: true
-script: bats tests
+# Run inside a subshell so the group membership kicks in.
+script: sudo -E su $USER -c bats tests

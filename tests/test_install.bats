@@ -29,28 +29,28 @@ setup() {
 
 @test "system file creation" {
     # Test that the installer creates system files for systemwide install.
-    cisudo bash "${INSTALLER}"
+    cisudo "${INSTALLER}"
     ls "${DOILY_TEST_BIN}/doily"
     ls "${DEFAULT_CONFIG}"
 }
 
 @test "system install file perms" {
     # Test that the systemwide binary is executable and the config is not.
-    cisudo bash "${INSTALLER}"
+    cisudo "${INSTALLER}"
     test -x "${DOILY_TEST_BIN}/doily"
     test ! -x "${DEFAULT_CONFIG}"
 }
 
 @test "system install doesn't install user files" {
     # Test that the systemwide install doesn't create files in userspace.
-    cisudo bash "${INSTALLER}"
+    cisudo "${INSTALLER}"
     assertFails ls "${HOME}/bin/doily"
     assertFails ls "${PERSONAL_CONFIG}"
 }
 
 @test "system install doesn't leave tempfiles" {
     # Test that the systemwide install cleans up its tempfiles.
-    cisudo bash "${INSTALLER}"
+    cisudo "${INSTALLER}"
     assertFails ls -d "/tmp/doily-*"
 }
 
@@ -83,15 +83,15 @@ setup() {
 
 @test "systemwide uninstall removes files" {
     # Test that systemwide uninstall removes the install locations.
-    cisudo bash "${INSTALLER}"
-    cisudo bash "${INSTALLER}" --remove
+    cisudo "${INSTALLER}"
+    cisudo "${INSTALLER}" --remove
     assertFails ls "${DOILY_TEST_BIN}/doily"
     assertFails ls "${DOILY_TEST_ETC}/doily"
 }
 
 @test "systemwide uninstall leaves user files" {
     # Test that systemwide uninstall doesn't remove userspace files.
-    cisudo bash "${INSTALLER}"
+    cisudo "${INSTALLER}"
     doily_dir="${HOME}/.local/share/doily/dailies"
     mkdir -p "${doily_dir}"
     mkdir -p "${PERSONAL_CONFIG_DIR}"
@@ -99,7 +99,7 @@ setup() {
     touch "${PERSONAL_CONFIG}"
     ls "${doily_dir}/foo"
     ls "${PERSONAL_CONFIG}"
-    cisudo bash "${INSTALLER}" --remove
+    cisudo "${INSTALLER}" --remove
     ls "${doily_dir}/foo"
     ls "${PERSONAL_CONFIG}"
 }
