@@ -13,8 +13,16 @@
 
 load helpers
 
-assertPerms() {
-    test "$(stat -c %a "$1")" == "$2"
+assertDailyPerms() {
+    # Check that all the daily directory/file permissions are right.
+    # Arguments: directory perms, file perms, group
+    test "$(stat -c %a "${doily_dir}")" == "$1"
+    test "$(stat -c %G "${doily_dir}")" == "$3"
+    for file in $(ls "${doily_dir}"); do
+        ls -l "${doily_dir}"
+        test "$(stat -c %a "${doily_dir}/${file}")" == "$2"
+        test "$(stat -c %G "${doily_dir}/${file}")" == "$3"
+    done
 }
 
 setup() {
@@ -107,26 +115,16 @@ setup() {
     EDITOR=touch
 
     command_write
-    assertPerms "${doily_dir}" 700
-    for file in $(ls "${doily_dir}"); do
-        ls -l "${doily_dir}"
-        assertPerms "${doily_dir}/${file}" 600
-    done
+    assertDailyPerms 700 600 "${USER}"
 
     public_dailies=y
     command_write
-    assertPerms "${doily_dir}" 755
-    for file in $(ls "${doily_dir}"); do
-        assertPerms "${doily_dir}/${file}" 644
-    done
+    assertDailyPerms 755 644 "${USER}"
 
     public_dailies=
     doily_group=
     command_write
-    assertPerms "${doily_dir}" 700
-    for file in $(ls "${doily_dir}"); do
-        assertPerms "${doily_dir}/${file}" 600
-    done
+    assertDailyPerms 700 600 "${USER}"
 }
 
 @test "write group permissions" {
@@ -136,10 +134,7 @@ setup() {
     public_dailies=
     doily_group=doily_test
     command_write
-    assertPerms "${doily_dir}" 750
-    for file in $(ls "${doily_dir}"); do
-        assertPerms "${doily_dir}/${file}" 640
-    done
+    assertDailyPerms 750 640 "doily_test"
 }
 
 @test "default command is write" {
