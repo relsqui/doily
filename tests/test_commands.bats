@@ -69,7 +69,14 @@ setup() {
         echo "foo" > "${doily_dir}/${file}"
         echo "${doily_dir}/${file}:foo" >> "${DOILY_TMP}/expected"
     done
-    command_search "foo" >> "${DOILY_TMP}/actual"
+    command_search "foo" > "${DOILY_TMP}/actual"
+    diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
+
+    echo "bar" > "${doily_dir}/4"
+    diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
+    echo "foo" >> "${doily_dir}/4"
+    echo "${doily_dir}/4:foo" >> "${DOILY_TMP}/expected"
+    command_search "foo" > "${DOILY_TMP}/actual"
     diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
 }
 
