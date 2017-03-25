@@ -157,7 +157,6 @@ command_write() {
     # Returns:
     #    - None.
     ############################################################################
-    "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
 
     if [[ -n "${public_dailies}" ]]; then
         file_perms=644
@@ -177,6 +176,10 @@ command_write() {
     # directory as your Doily directory, this is why.)
     chmod "${dir_perms}" "${doily_dir}"
     chgrp "${doily_group}" "${doily_dir}"
+
+    # Do the actual writing after the group perms, in case they were set wrong,
+    # but before the file perms, in case we're adding a new one.
+    "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
 
     if [[ -z "$(find "${doily_dir}" -maxdepth 0 -empty)" ]]; then
         # These will error out if the directory is empty (for example if the text
