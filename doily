@@ -20,6 +20,7 @@ VERSION="0.1.2"
 CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
 DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
+DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
@@ -91,7 +92,7 @@ command_read() {
     # Opens a daily file in the user's preferred pager.
     #
     # Config Vars:
-    #    - doily_dir
+    #    - DAILIES
     # Environment:
     #    - PAGER
     # Args:
@@ -110,7 +111,7 @@ command_read() {
         echo "Couldn't find a daily corresponding to that date."
         return "$EDATE"
     fi
-    "${PAGER:-less}" "${doily_dir}/${target}"
+    "${PAGER:-less}" "${DAILIES}/${target}"
 }
 
 command_search() {
@@ -118,7 +119,7 @@ command_search() {
     # Search past daily files for a regular expression.
     #
     # Config Vars:
-    #    - doily_dir
+    #    - DAILIES
     # Args:
     #    - The pattern to search for (required but can be empty).
     #    - An identifier for the daily to search. This should be either the
@@ -128,7 +129,7 @@ command_search() {
     #    - EDATE if the daily couldn't be identified.
     ############################################################################
     if [[ -z "$2" ]]; then
-        egrep "$1" "${doily_dir}"/*
+        egrep "$1" "${DAILIES}"/*
         return
     fi
     target="$(identify_dailyfile "$2")"
@@ -136,7 +137,7 @@ command_search() {
         echo "Couldn't find a daily corresponding to that date."
         return "$EDATE"
     fi
-    egrep "$1" "${doily_dir}/${target}"
+    egrep "$1" "${DAILIES}/${target}"
 }
 
 command_version() {
@@ -159,7 +160,7 @@ command_write() {
     # and possibly adds files to git, depending on user configuration.
     #
     # Globals:
-    #    - doily_dir
+    #    - DAILIES
     #    - public_dailies
     #    - doily_group
     #    - use_git
@@ -189,32 +190,32 @@ command_write() {
     # Set permissions on everything, in case the config has changed.
     # (If you were wondering why the config file says not to use your home
     # directory as your Doily directory, this is why.)
-    chmod "${dir_perms}" "${doily_dir}"
-    chgrp "${doily_group}" "${doily_dir}"
+    chmod "${dir_perms}" "${DAILIES}"
+    chgrp "${doily_group}" "${DAILIES}"
 
     # Do the actual writing after the group perms, in case they were set wrong,
     # but before the file perms, in case we're adding a new one.
-    "${EDITOR:-nano}" "${doily_dir}/$(date +%F)"
+    "${EDITOR:-nano}" "${DAILIES}/$(date +%F)"
 
-    if [[ -z "$(find "${doily_dir}" -maxdepth 0 -empty)" ]]; then
-        # These will error out if the directory is empty (for example if the text
-        # editor was closed without saving), so we check first.
+    if [[ -z "$(find "${DAILIES}" -maxdepth 0 -empty)" ]]; then
+        # These will error out if the directory is empty (for example if the
+        # text editor was closed without saving), so we check first.
         # The method is taken from: http://stackoverflow.com/a/91769
-        chmod "${file_perms}" "${doily_dir}"/*
-        chgrp "${doily_group}" "${doily_dir}"/*
+        chmod "${file_perms}" "${DAILIES}"/*
+        chgrp "${doily_group}" "${DAILIES}"/*
     fi
 
     if [[ -n "${use_git}" ]]; then
         # This will usually be excessive but harmless; if use_git is newly turned
         # on, though, it ensures the repo gets created and finds old dailies.
-        git -C "${doily_dir}" init
-        git -C "${doily_dir}" add "${doily_dir}"
+        git -C "${DAILIES}" init
+        git -C "${DAILIES}" add "${DAILIES}"
         # The commit commands will return non-zero if we didn't commit anything,
         # but that's okay, so add an extra true to keep set -e from exiting.
         if [[ -n "${auto_commit}" ]]; then
-            git -C "${doily_dir}" commit -m "Automatic commit from Doily." || true
+            git -C "${DAILIES}" commit -m "Automatic commit from Doily." || true
         else
-            git -C "${doily_dir}" commit || true
+            git -C "${DAILIES}" commit || true
         fi
     fi
 }
@@ -259,7 +260,7 @@ check_storage() {
     # Does some safety checking on the daily file storage directory.
     #
     # Config Vars:
-    #    - doily_dir
+    #    - DAILIES
     # Environment:
     #    - HOME
     # Args:
@@ -268,25 +269,25 @@ check_storage() {
     #    - ESTORAGE if the directory is set inappropriately.
     #    - The return value of `mkdir -p` if it needs to be created.
     ############################################################################
-    if [[ -z "${doily_dir}" ]]; then
+    if [[ -z "${DAILIES}" ]]; then
         echo "No storage location set for Doily!"\
              "Please set one by running \`doily config\`." 1>&2
         return "${ESTORAGE}"
     fi
-    if [[ "${doily_dir}" != /* ]]; then
+    if [[ "${DAILIES}" != /* ]]; then
         # If it starts with ~, the shell will expand it before it gets here.
         echo "Your Doily directory is set to a relative path, which is"\
              "unsafe. Please change it by running \`doily config\`." 1>&2
         return "${ESTORAGE}"
     fi
-    if [[ "${doily_dir}" -ef "${HOME}" ]]; then
+    if [[ "${DAILIES}" -ef "${HOME}" ]]; then
         echo "Your Doily directory is set to your home directory, which is"\
              "unsafe. Please change it by running \`doily config\`."\
-             "${doily_dir} == ${HOME}" 1>&2
+             "${DAILIES} == ${HOME}" 1>&2
         return "${ESTORAGE}"
     fi
-    if [[ ! -d "${doily_dir}" ]]; then
-        mkdir -p "${doily_dir}"
+    if [[ ! -d "${DAILIES}" ]]; then
+        mkdir -p "${DAILIES}"
         return $?
     fi
 }
@@ -298,7 +299,7 @@ identify_dailyfile() {
     # interpret, or the special case "last" to mean the most recent daily.
     #
     # Config Vars:
-    #    - doily_dir
+    #    - DAILIES
     # Args:
     #    - A string which can be identified as a daily file, either "last" or
     #      any format `date` can parse.
@@ -308,18 +309,18 @@ identify_dailyfile() {
     # Returns:
     #    - None.
     ############################################################################
-    if find "${doily_dir}" -maxdepth 0 -empty >/dev/null; then
+    if find "${DAILIES}" -maxdepth 0 -empty >/dev/null; then
         # More than zero daily files exist.
         if [[ "$1" == "last" ]]; then
             # Echo the last (alphabetically) file in the directory, which
             # is the most recent unless it's been manually altered.
-            echo "$(ls "${doily_dir}" | tail -n 1)"
+            echo "$(ls "${DAILIES}" | tail -n 1)"
             return
         else
             filename="$(date +%F --date="$1")"
             # Date will print nothing to stdin if it fails.
             if [[ -n "${filename}" ]]; then
-                if [[ -e "${doily_dir}/${filename}" ]]; then
+                if [[ -e "${DAILIES}/${filename}" ]]; then
                     echo "${filename}"
                     return
                 fi
