@@ -9,10 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Loads of tests.
+* A plugin system supporting pre- and post-write hooks.
+* show_streak and use_git plugins.
+* Boilerplate for new tests and new plugins.
 
 ### Changed
 
 * Default search target is now everything.
+* Dailies directory is no longer configurable.
+* Default configuration no longer has the dailies directory or git options.
 
 ## [0.1.2] - 2017-03-16
 ### Fixed

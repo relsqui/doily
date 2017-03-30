@@ -218,20 +218,6 @@ command_write() {
     for plugin in $POST_WRITE_PLUGINS; do
         "${PLUGIN_DIR}/${plugin}" post_write
     done
-
-    if [[ -n "${use_git}" ]]; then
-        # This will usually be excessive but harmless; if use_git is newly turned
-        # on, though, it ensures the repo gets created and finds old dailies.
-        git -C "${DAILIES}" init
-        git -C "${DAILIES}" add "${DAILIES}"
-        # The commit commands will return non-zero if we didn't commit anything,
-        # but that's okay, so add an extra true to keep set -e from exiting.
-        if [[ -n "${auto_commit}" ]]; then
-            git -C "${DAILIES}" commit -m "Automatic commit from Doily." || true
-        else
-            git -C "${DAILIES}" commit || true
-        fi
-    fi
 }
 
 check_config() {
@@ -364,7 +350,8 @@ register_plugins() {
     # Returns:
     #    - None.
     ############################################################################
-    plugins=$(basename "${PLUGIN_DIR}"/*)
+    plugins=$(basename -a "${PLUGIN_DIR}"/*)
+    echo "Registered plugins from ${PLUGIN_DIR}: ${plugins}"
     for plugin in $plugins; do
         if "${PLUGIN_DIR}/${plugin}" provides pre_write; then
             PRE_WRITE_PLUGINS="${PRE_WRITE_PLUGINS} ${plugin}"
@@ -373,6 +360,9 @@ register_plugins() {
             POST_WRITE_PLUGINS="${POST_WRITE_PLUGINS} ${plugin}"
         fi
     done
+    echo "Pre-write plugins: ${PRE_WRITE_PLUGINS}"
+    echo "Post-write plugins: ${POST_WRITE_PLUGINS}"
+    # read
 }
 
 run_command() {
