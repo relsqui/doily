@@ -328,7 +328,13 @@ identify_dailyfile() {
         if [[ "$1" == "last" ]]; then
             # Echo the last (alphabetically) file in the directory, which
             # is the most recent unless it's been manually altered.
-            echo "$(ls "${DAILIES}" | tail -n 1)"
+            latest=
+            for file in "${DAILIES}"/*; do
+                if [[ -z "${latest}" || "${latest}" -ot "${file}" ]]; then
+                    latest="${file}"
+                fi
+            done
+            echo $(basename "${latest}")
             return
         else
             filename="$(date +%F --date="$1")"
@@ -358,7 +364,7 @@ register_plugins() {
     # Returns:
     #    - None.
     ############################################################################
-    plugins="$(ls ${PLUGIN_DIR})"
+    plugins=$(basename "${PLUGIN_DIR}"/*)
     for plugin in $plugins; do
         if "${PLUGIN_DIR}/${plugin}" provides pre_write; then
             PRE_WRITE_PLUGINS="${PRE_WRITE_PLUGINS} ${plugin}"

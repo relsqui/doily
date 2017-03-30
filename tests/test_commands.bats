@@ -18,10 +18,10 @@ assertDailyPerms() {
     # Arguments: directory perms, file perms, group
     test "$(stat -c %a "${DAILIES}")" == "$1"
     test "$(stat -c %G "${DAILIES}")" == "$3"
-    for file in $(ls "${DAILIES}"); do
-        ls -l "${DAILIES}"
-        test "$(stat -c %a "${DAILIES}/${file}")" == "$2"
-        test "$(stat -c %G "${DAILIES}/${file}")" == "$3"
+    ls -l "${DAILIES}"
+    for file in "${DAILIES}"/*; do
+        test "$(stat -c %a "${file}")" == "$2"
+        test "$(stat -c %G "${file}")" == "$3"
     done
 }
 
@@ -33,8 +33,11 @@ setup() {
 @test "identify dailyfile" {
     # Test various kinds of day input.
     touch "${DAILIES}/2017-01-01"
+    # Bash can't detect file age differences <1s.
+    sleep 1
     touch "${DAILIES}/2017-01-02"
     test "$(identify_dailyfile last)" == "2017-01-02"
+    sleep 1
     touch "${DAILIES}/2017-01-03"
     test "$(identify_dailyfile last)" == "2017-01-03"
     test "$(identify_dailyfile "2017-01-01")" == "2017-01-01"
@@ -69,6 +72,8 @@ setup() {
     for date in 1984-11-03 1985-12-05; do
         echo "${date}" > "${DAILIES}/${date}"
         test "$(command_read "${date}")" == "${date}"
+        # Bash can't detect file age differences <1s.
+        sleep 1
     done
     test "$(command_read)" == "1985-12-05"
     assertFails command_read "Some non-date."
