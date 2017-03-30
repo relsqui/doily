@@ -15,14 +15,18 @@ set -e
 
 VERSION="0.1.2"
 
-# This complies with the XDG Base Directory Specification:
+# All of these are exported so that plugins can have access to them.
+# The directories comply with the XDG Base Directory Specification:
 # https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
-CONF_FILE="${CONF_DIR}/doily.conf"
-DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
-DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
-PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/doily/plugins"
-PLUGINS="$(ls "${PLUGIN_DIR}")"
+export CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
+export CONF_FILE="${CONF_DIR}/doily.conf"
+export DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
+export DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
+export PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/doily/plugins"
+
+# These will be initialized in register_plugins() later.
+PRE_WRITE_PLUGINS=
+POST_WRITE_PLUGINS=
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
@@ -195,7 +199,9 @@ command_write() {
     chmod "${dir_perms}" "${DAILIES}"
     chgrp "${doily_group}" "${DAILIES}"
 
-    call_plugins pre_write
+    for plugin in $PRE_WRITE_PLUGINS; do
+        "${PLUGIN_DIR}/${plugin}" pre_write
+    done
 
     # Do the actual writing after the group perms, in case they were set wrong,
     # but before the file perms, in case we're adding a new one.
@@ -209,7 +215,9 @@ command_write() {
         chgrp "${doily_group}" "${DAILIES}"/*
     fi
 
-    call_plugins post_write
+    for plugin in $POST_WRITE_PLUGINS; do
+        "${PLUGIN_DIR}/${plugin}" post_write
+    done
 
     if [[ -n "${use_git}" ]]; then
         # This will usually be excessive but harmless; if use_git is newly turned
@@ -337,25 +345,27 @@ identify_dailyfile() {
     echo ""
 }
 
-call_plugins() {
+register_plugins() {
     ############################################################################
-    # Call each plugin with the appropriate hook.
+    # Look for installed plugins and note which ones provide what functions.
     #
     # Globals:
-    #    - PLUGINS
     #    - PLUGIN_DIR
+    #    - PRE_WRITE_PLUGINS
+    #    - POST_WRITE_PLUGINS
     # Args:
-    #    - The hook name ("pre_write" or "post_write"), or "command" followed
-    #      by the requested command name and any arguments.
+    #    - None.
     # Returns:
     #    - None.
     ############################################################################
-    if [[ -z "${PLUGINS}" ]]; then
-        return
-    fi
-    # No variable quotes here because we need them to be separate.
-    for plugin in $PLUGINS; do
-        "${PLUGIN_DIR}/${plugin}" "$@"
+    plugins="$(ls ${PLUGIN_DIR})"
+    for plugin in $plugins; do
+        if "${PLUGIN_DIR}/${plugin}" provides pre_write; then
+            PRE_WRITE_PLUGINS="${PRE_WRITE_PLUGINS} ${plugin}"
+        fi
+        if "${PLUGIN_DIR}/${plugin}" provides post_write; then
+            POST_WRITE_PLUGINS="${POST_WRITE_PLUGINS} ${plugin}"
+        fi
     done
 }
 
@@ -393,7 +403,8 @@ main() {
     check_config || return $?
     source "${CONF_FILE}"
     check_storage || return $?
-    run_command "$@" || return $?
+    register_plugins || return $?
+    run_command "$@"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

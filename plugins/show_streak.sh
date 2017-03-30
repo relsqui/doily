@@ -9,35 +9,22 @@
 # After writing, shows a series of . and o indicating how many days in a row
 # you've written something (that is, days for which there's a dated file in
 # your dailies directory).
-#
-# This is also the test file for the new plugin system! Yay!
 ################################################################################
 
-DOILY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/doily/doily.conf"
-PLUGIN_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/doily/plugins/show_streak.conf"
-DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
-
-custom_command() {
-    # Not in use. Don't delete this!
-    :
-}
-
-pre_write() {
-    # Not in use. Don't delete this!
-    :
-}
+PLUGIN_NAME="show_streak"
+PLUGIN_AUTHOR="Finn Ellis <relsqui@chiliahedron.com>"
+PLUGIN_VERSION="v0.1.0"
+PLUGIN_DESCRIPTION="Daily writing streak tracker."
+read -d ' ' PLUGIN_HELP <<EOF
+After you write, show_streak will display a series of . and o characters, one
+for each day since your earliest daily. An o represents a day you wrote, and
+a . represents a day you didn't.
+EOF
+PROVIDES_PRE_WRITE=false
+PROVIDES_POST_WRITE=true
+PROVIDES_COMMANDS=
 
 post_write() {
-    ############################################################################
-    # Calculate the streak display and echo it.
-    #
-    # Globals:
-    #    - DAILIES
-    # Args:
-    #    - None.
-    # Returns:
-    #    - None.
-    ############################################################################
     total="$(ls "${DAILIES}" | wc -l)"
     if [[ "${total}" -eq 0 ]]; then
         # No dailies, so no streak.
@@ -85,37 +72,43 @@ post_write() {
 
 main() {
     ############################################################################
-    # Parses arguments and calls the appropriate other function. Plugin authors
-    # DO NOT NEED TO EDIT THIS, just edit the functions for whichever hooks
-    # your plugin should respond to.
+    # DO NOT EDIT THIS. Edit the variables and functions above instead!
+    #
+    # Responds to requests from the Doily main script with either information
+    # about the plugin or an action to be taken in response to a hook or a
+    # command entered by the user.
     #
     # Globals:
-    #    - DOILY_CONF
-    #    - PLUGIN_CONF
-    # Config Vars:
-    #    - DAILIES
+    #    - CONF_FILE (exported by Doily)
+    #    - PLUGIN_NAME
+    #    - PROVIDES_PRE_WRITE
+    #    - PROVIDES_POST_WRITE
+    #    - PROVIDES_COMMANDS
     # Args:
-    #    - The name of a hook ("pre_write" or "post_write"), or "command"
-    #      followed by the command name and any arguments it requires.
+    #    - The type of information requested by Doily. This can be either:
+    #      . The name of a hook ("pre_write" or "post_write"), OR
+    #      . The string "command" followed by a command name and arguments, OR
+    #      . The string "provides" followed by either "pre_write",
+    #        "post_write", or "commands".
     # Returns:
     #    - None.
     ############################################################################
-    source "${DOILY_CONF}"
-    if [[ -e "${PLUGIN_CONF}" ]]; then
-        source "${PLUGIN_CONF}"
+    source "${CONF_FILE}"
+    config="${XDG_CONFIG_HOME:-$HOME/.config}/doily/plugins/${PLUGIN_NAME}.conf"
+    if [[ -e "${config}" ]]; then
+        source "${config}"
     fi
     case "$1" in
-        pre_write)
+        pre_write) pre_write ;;
+        post_write) post_write ;;
+        command) shift; custom_commands "$@" ;;
+        provides)
             shift
-            pre_write
-            ;;
-        post_write)
-            shift
-            post_write
-            ;;
-        command)
-            shift
-            custom_command "$@"
+            case "$1" in
+                pre_write) $PROVIDES_PRE_WRITE && return 0 || return 1 ;;
+                post_write) $PROVIDES_POST_WRITE && return 0 || return 1 ;;
+                commands) echo "${PROVIDES_COMMANDS}" ;;
+            esac
             ;;
     esac
 }
