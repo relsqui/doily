@@ -23,6 +23,21 @@ DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
+error_out() {
+    ############################################################################
+    # Print a message and exit with the specified return value.
+    #
+    # Args:
+    #    - A message to print to the user.
+    #    - The exit code to return.
+    # Returns:
+    #    - None.
+    ############################################################################
+    message, code = $@
+    echo "${message}"
+    exit "${code}"
+}
+
 command_config() {
     ############################################################################
     # Opens the user's personal configuration file in their preferred editor.
