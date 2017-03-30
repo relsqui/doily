@@ -21,6 +21,8 @@ CONF_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/doily"
 CONF_FILE="${CONF_DIR}/doily.conf"
 DEFAULT_CONF="${DOILY_TEST_ETC:-/usr/local/etc}/doily/default.conf"
 DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
+PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/doily/plugins"
+PLUGINS="$(ls "${PLUGIN_DIR}")"
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
@@ -193,6 +195,8 @@ command_write() {
     chmod "${dir_perms}" "${DAILIES}"
     chgrp "${doily_group}" "${DAILIES}"
 
+    call_plugins pre_write
+
     # Do the actual writing after the group perms, in case they were set wrong,
     # but before the file perms, in case we're adding a new one.
     "${EDITOR:-nano}" "${DAILIES}/$(date +%F)"
@@ -204,6 +208,8 @@ command_write() {
         chmod "${file_perms}" "${DAILIES}"/*
         chgrp "${doily_group}" "${DAILIES}"/*
     fi
+
+    call_plugins post_write
 
     if [[ -n "${use_git}" ]]; then
         # This will usually be excessive but harmless; if use_git is newly turned
@@ -329,6 +335,28 @@ identify_dailyfile() {
     fi
     # We couldn't find it or it didn't exist.
     echo ""
+}
+
+call_plugins() {
+    ############################################################################
+    # Call each plugin with the appropriate hook.
+    #
+    # Globals:
+    #    - PLUGINS
+    #    - PLUGIN_DIR
+    # Args:
+    #    - The hook name ("pre_write" or "post_write"), or "command" followed
+    #      by the requested command name and any arguments.
+    # Returns:
+    #    - None.
+    ############################################################################
+    if [[ -z "${PLUGINS}" ]]; then
+        return
+    fi
+    # No variable quotes here because we need them to be separate.
+    for plugin in $PLUGINS; do
+        "${PLUGIN_DIR}/${plugin}" "$@"
+    done
 }
 
 run_command() {
