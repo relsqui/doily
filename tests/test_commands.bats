@@ -16,27 +16,26 @@ load helpers
 assertDailyPerms() {
     # Check that all the daily directory/file permissions are right.
     # Arguments: directory perms, file perms, group
-    test "$(stat -c %a "${doily_dir}")" == "$1"
-    test "$(stat -c %G "${doily_dir}")" == "$3"
-    for file in $(ls "${doily_dir}"); do
-        ls -l "${doily_dir}"
-        test "$(stat -c %a "${doily_dir}/${file}")" == "$2"
-        test "$(stat -c %G "${doily_dir}/${file}")" == "$3"
+    test "$(stat -c %a "${DAILIES}")" == "$1"
+    test "$(stat -c %G "${DAILIES}")" == "$3"
+    for file in $(ls "${DAILIES}"); do
+        ls -l "${DAILIES}"
+        test "$(stat -c %a "${DAILIES}/${file}")" == "$2"
+        test "$(stat -c %G "${DAILIES}/${file}")" == "$3"
     done
 }
 
 setup() {
-    doily_dir="${DOILY_TMP}/dailies"
-    mkdir -p "${doily_dir}"
+    mkdir -p "${DAILIES}"
     source "${BATS_TEST_DIRNAME}"/../doily
 }
 
 @test "identify dailyfile" {
     # Test various kinds of day input.
-    touch "${doily_dir}/2017-01-01"
-    touch "${doily_dir}/2017-01-02"
+    touch "${DAILIES}/2017-01-01"
+    touch "${DAILIES}/2017-01-02"
     test "$(identify_dailyfile last)" == "2017-01-02"
-    touch "${doily_dir}/2017-01-03"
+    touch "${DAILIES}/2017-01-03"
     test "$(identify_dailyfile last)" == "2017-01-03"
     test "$(identify_dailyfile "2017-01-01")" == "2017-01-01"
     test "$(identify_dailyfile "January 2, 2017")" == "2017-01-02"
@@ -68,7 +67,7 @@ setup() {
     # Test that the read command affects the correct files.
     PAGER=cat
     for date in 1984-11-03 1985-12-05; do
-        echo "${date}" > "${doily_dir}/${date}"
+        echo "${date}" > "${DAILIES}/${date}"
         test "$(command_read "${date}")" == "${date}"
     done
     test "$(command_read)" == "1985-12-05"
@@ -78,16 +77,16 @@ setup() {
 @test "search command default" {
     # Test that the search command defaults to all daily files.
     for file in 1 2 3; do
-        echo "foo" > "${doily_dir}/${file}"
-        echo "${doily_dir}/${file}:foo" >> "${DOILY_TMP}/expected"
+        echo "foo" > "${DAILIES}/${file}"
+        echo "${DAILIES}/${file}:foo" >> "${DOILY_TMP}/expected"
     done
     command_search "foo" > "${DOILY_TMP}/actual"
     diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
 
-    echo "bar" > "${doily_dir}/4"
+    echo "bar" > "${DAILIES}/4"
     diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
-    echo "foo" >> "${doily_dir}/4"
-    echo "${doily_dir}/4:foo" >> "${DOILY_TMP}/expected"
+    echo "foo" >> "${DAILIES}/4"
+    echo "${DAILIES}/4:foo" >> "${DOILY_TMP}/expected"
     command_search "foo" > "${DOILY_TMP}/actual"
     diff "${DOILY_TMP}/expected" "${DOILY_TMP}/actual"
 }
@@ -97,18 +96,18 @@ setup() {
 }
 
 @test "search command specific dates" {
-    echo "foo" > "${doily_dir}/1985-12-05"
+    echo "foo" > "${DAILIES}/1985-12-05"
     test "foo" == "$(command_search 'foo' 'December 5, 1985')"
     assertFails command_search 'foo' 'December 6, 1985'
-    touch "${doily_dir}/1985-12-06"
+    touch "${DAILIES}/1985-12-06"
     test "" == "$(command_search 'foo' 'December 6, 1985')"
 }
 
 @test "basic write command" {
     EDITOR=touch
-    assertFails ls "${doily_dir}/$(date +%F)"
+    assertFails ls "${DAILIES}/$(date +%F)"
     command_write
-    ls "${doily_dir}/$(date +%F)"
+    ls "${DAILIES}/$(date +%F)"
 }
 
 @test "write sets permissions" {
@@ -148,9 +147,9 @@ setup() {
 @test "default command is write" {
     # Test that run_command chooses write when no command is specified.
     EDITOR=touch
-    assertFails ls "${doily_dir}/$(date +%F)"
+    assertFails ls "${DAILIES}/$(date +%F)"
     run_command
-    ls "${doily_dir}/$(date +%F)"
+    ls "${DAILIES}/$(date +%F)"
 }
 
 @test "nonexistant command" {

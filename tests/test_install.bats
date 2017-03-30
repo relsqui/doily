@@ -92,15 +92,14 @@ setup() {
 @test "systemwide uninstall leaves user files" {
     # Test that systemwide uninstall doesn't remove userspace files.
     cisudo "${INSTALLER}"
-    doily_dir="${HOME}/.local/share/doily/dailies"
-    mkdir -p "${doily_dir}"
+    mkdir -p "${DAILIES}"
     mkdir -p "${PERSONAL_CONFIG_DIR}"
-    touch "${doily_dir}/foo"
+    touch "${DAILIES}/foo"
     touch "${PERSONAL_CONFIG}"
-    ls "${doily_dir}/foo"
+    ls "${DAILIES}/foo"
     ls "${PERSONAL_CONFIG}"
     cisudo "${INSTALLER}" --remove
-    ls "${doily_dir}/foo"
+    ls "${DAILIES}/foo"
     ls "${PERSONAL_CONFIG}"
 }
 

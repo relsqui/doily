@@ -41,33 +41,33 @@ setup() {
 
 @test "no storage location" {
     # Test that check_storage fails when no storage location is set.
-    doily_dir=""
+    DAILIES=""
     assertFails check_storage
 }
 
 @test "relative storage location" {
     # Test that check_storage complains when the storage path is relative.
-    doily_dir="relative/path"
+    DAILIES="relative/path"
     assertFails check_storage
 }
 
 @test "homedir storage location" {
     # Test that check_storage complains when the storage path is $HOME.
-    doily_dir="${HOME}"
+    DAILIES="${HOME}"
     assertFails check_storage
 }
 
 @test "create storage location" {
     # Test that check_storage creates the storage location if needed.
-    doily_dir="${DOILY_TMP}/dailies"
-    assertFails ls -d "${doily_dir}"
+    DAILIES="${DOILY_TMP}/dailies"
+    assertFails ls -d "${DAILIES}"
     check_storage
-    ls -d "${doily_dir}"
+    ls -d "${DAILIES}"
 }
 
 @test "storage location is fine" {
     # Test that check_storage succeeds when all is well.
-    doily_dir="${DOILY_TMP}/dailies"
-    mkdir -p "${doily_dir}"
+    DAILIES="${DOILY_TMP}/dailies"
+    mkdir -p "${DAILIES}"
     check_storage
 }

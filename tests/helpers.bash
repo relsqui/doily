@@ -26,6 +26,7 @@ export DOILY_TMP="${BATS_TMPDIR}/doily"
 
 # Putting a homedir in our temp space makes it easier to clean up.
 export HOME="${DOILY_TMP}/home"
+export DAILIES="${XDG_DATA_HOME:-$HOME/.local/share}/doily/dailies"
 mkdir -p "${HOME}"
 
 # Locations for the systemwide binary and default config.
