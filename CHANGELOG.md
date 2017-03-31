@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 * Loads of tests.
-* A plugin system supporting pre- and post-write hooks.
+* A plugin system supporting pre- and post-write hooks, and custom commands.
 * show_streak and use_git plugins.
 * Boilerplate for new tests and new plugins.
 
