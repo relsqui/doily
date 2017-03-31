@@ -196,8 +196,6 @@ command_write() {
     fi
 
     # Set permissions on everything, in case the config has changed.
-    # (If you were wondering why the config file says not to use your home
-    # directory as your Doily directory, this is why.)
     chmod "${dir_perms}" "${DAILIES}"
     chgrp "${doily_group}" "${DAILIES}"
 
@@ -389,7 +387,7 @@ run_command() {
     case "${doily_command}" in
         config) command_config; return $? ;;
         help) command_help; return $? ;;
-        read) command_read; return $? "$@" ;;
+        read) command_read "$@"; return $? ;;
         search) command_search "$@"; return $? ;;
         version) command_version; return $? ;;
         write) command_write; return $? ;;
