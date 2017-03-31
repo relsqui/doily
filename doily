@@ -27,7 +27,7 @@ export PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/doily/plugins"
 # These will be initialized in register_plugins() later.
 PRE_WRITE_PLUGINS=
 POST_WRITE_PLUGINS=
-# This one is explicitly an associative array.
+# Since we're declaring this empty, it has to explicitly be made associative.
 declare -A PLUGIN_COMMANDS=( )
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
@@ -361,6 +361,8 @@ register_plugins() {
             POST_WRITE_PLUGINS="${POST_WRITE_PLUGINS} ${plugin}"
         fi
         # Using set here honors quoted substrings (multi-word commands).
+        # Thanks to Mitch Frazier for this idea:
+        # http://www.linuxjournal.com/content/bash-quoting
         eval set -- $(${PLUGIN_DIR}/${plugin} provides commands)
         for comm in "$@"; do
             PLUGIN_COMMANDS[$comm]="${PLUGIN_COMMANDS[$comm]} ${plugin}"
