@@ -27,6 +27,8 @@ export PLUGIN_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/doily/plugins"
 # These will be initialized in register_plugins() later.
 PRE_WRITE_PLUGINS=
 POST_WRITE_PLUGINS=
+# This one is explicitly an associative array.
+declare -A PLUGIN_COMMANDS=( )
 
 read ECONFIG ESTORAGE ECOMMAND EDATE <<< $(seq 4)
 
@@ -351,7 +353,6 @@ register_plugins() {
     #    - None.
     ############################################################################
     plugins=$(basename -a "${PLUGIN_DIR}"/*)
-    echo "Registered plugins from ${PLUGIN_DIR}: ${plugins}"
     for plugin in $plugins; do
         if "${PLUGIN_DIR}/${plugin}" provides pre_write; then
             PRE_WRITE_PLUGINS="${PRE_WRITE_PLUGINS} ${plugin}"
@@ -359,10 +360,12 @@ register_plugins() {
         if "${PLUGIN_DIR}/${plugin}" provides post_write; then
             POST_WRITE_PLUGINS="${POST_WRITE_PLUGINS} ${plugin}"
         fi
+        # Using set here honors quoted substrings (multi-word commands).
+        eval set -- $(${PLUGIN_DIR}/${plugin} provides commands)
+        for comm in "$@"; do
+            PLUGIN_COMMANDS[$comm]="${PLUGIN_COMMANDS[$comm]} ${plugin}"
+        done
     done
-    echo "Pre-write plugins: ${PRE_WRITE_PLUGINS}"
-    echo "Post-write plugins: ${POST_WRITE_PLUGINS}"
-    # read
 }
 
 run_command() {
@@ -382,17 +385,23 @@ run_command() {
     # This returns failure if the args are empty, which is actually OK.
     shift || true
     case "${doily_command}" in
-        config) command_config ;;
-        help) command_help ;;
-        read) command_read "$@" ;;
-        search) command_search "$@" ;;
-        version) command_version ;;
-        write) command_write ;;
-        *)
-            echo "Use \`doily help\` to see help and other commands."
-            return "${ECOMMAND}"
-            ;;
+        config) command_config; return $? ;;
+        help) command_help; return $? ;;
+        read) command_read; return $? "$@" ;;
+        search) command_search "$@"; return $? ;;
+        version) command_version; return $? ;;
+        write) command_write; return $? ;;
     esac
+    matching_plugins="${PLUGIN_COMMANDS[$doily_command]}"
+    if [[ -z "${matching_plugins}" ]]; then
+        echo "Unknown command: ${doily_command}."
+        echo "Use \`doily help\` to see help and other commands."
+        return "${ECOMMAND}"
+    fi
+    for plugin in "${matching_plugins}"; do
+        plugin=$(echo "${plugin}" | sed 's/^ *//')
+        "${PLUGIN_DIR}/${plugin}" call_command "${doily_command}" "$@"
+    done
 }
 
 main() {

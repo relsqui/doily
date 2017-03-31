@@ -20,6 +20,8 @@ EOF
 # At which points should this plugin be activated?
 PROVIDES_PRE_WRITE=true
 PROVIDES_POST_WRITE=true
+# What commands does this plugin enable?
+PROVIDES_COMMANDS=( test1 test2 "test 3" )
 
 pre_write() {
     # If you set PROVIDES_PRE_WRITE to false, you can delete this.
@@ -29,6 +31,34 @@ pre_write() {
 post_write() {
     # If you set PROVIDES_POST_WRITE to false, you can delete this.
     echo "This will happen after someone writes in a daily file!"
+}
+
+call_command() {
+    # Maps custom commands to the functions they should run.
+    # If you set PROVIDES_COMMANDS to ( ), you can delete this.
+    comm="$1"
+    shift
+    case "${comm}" in
+        # command) function_to_run "$@" ;;
+        test1) first_test "$@" ;;
+        test2) second_test "$@" ;;
+        "test 3") third_test "$@" ;;
+    esac
+}
+
+first_test() {
+    # This function is run when you call `doily test1`.
+    echo "The first test. Additional arguments: $@"
+}
+
+second_test() {
+    # This function is run when you call `doily test2`.
+    echo "The second test. Additional arguments: $@"
+}
+
+third_test() {
+    # This function is run when you call `doily "test 3"`.
+    echo "The all-important third test. Additional arguments: $@"
 }
 
 main() {
@@ -62,16 +92,19 @@ main() {
     case "$1" in
         pre_write) pre_write ;;
         post_write) post_write ;;
-        command) shift; custom_commands "$@" ;;
+        call_command) shift; call_command "$@" ;;
         provides)
             shift
             case "$1" in
                 pre_write) $PROVIDES_PRE_WRITE && return 0 || return 1 ;;
                 post_write) $PROVIDES_POST_WRITE && return 0 || return 1 ;;
-                commands) echo "${PROVIDES_COMMANDS}" ;;
+                # printf allows us to easily quote multi-word command names.
+                commands) echo $(printf "'%s' " "${PROVIDES_COMMANDS[@]}") ;;
             esac
             ;;
     esac
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
