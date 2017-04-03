@@ -4,6 +4,7 @@
 
 * [x] Select issues for the release.
 * [x] Create milestone.
+* [ ] Create branch for the new version.
 * [x] Update version number and milestone URL on checklist.
 * [x] Plan changes to installation script, if necessary.
 
@@ -39,5 +40,5 @@
 * [ ] Update version in default config file.
 * [ ] Update changelog version.
 * [ ] Create new package tarball.
-* [ ] Tag the release commit and push with `--tags`.
+* [ ] Tag the release commit with `-m 'M.m.p'` and push with `--tags`.
 * [ ] Reset the checklist.
